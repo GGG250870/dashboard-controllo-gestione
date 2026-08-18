@@ -134,6 +134,16 @@ input[type=number]:focus,input[type=text]:focus,select:focus{outline:none;border
 .company-name-input:focus{outline:none;border-bottom-color:#fff}
 .year-select{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:4px;padding:3px 6px;font-size:12px;width:72px;flex-shrink:0}
 .year-select option{color:#000}
+.save-indicator{font-size:11px;color:rgba(255,255,255,.65);white-space:nowrap;flex-shrink:0;transition:color .3s,opacity .3s}
+.save-indicator-flash{color:#8fe3ad}
+.save-indicator-error{color:#ffb4a8;font-weight:700}
+/* Import: categorizzazione automatica estratto conto */
+.import-preview table{font-size:11px}
+.import-row-unmatched{background:#fff8e6}
+.import-row-unmatched td{border-top:1px solid #f5dfa0;border-bottom:1px solid #f5dfa0}
+.import-summary{font-size:12px;margin:8px 0;padding:8px 12px;border-radius:6px;border:1px solid}
+.import-summary-ok{background:#eafaf0;border-color:#b8e6c9}
+.import-summary-warn{background:#fff8e6;border-color:#f5dfa0}
 /* ── LOCK ── */
 .lock-badge{display:inline-flex;align-items:center;gap:3px;background:rgba(231,76,60,.25);border:1px solid rgba(231,76,60,.5);color:#fff;border-radius:10px;padding:2px 8px;font-size:10px;margin:3px 6px}
 .sector-btn.locked-btn{opacity:.55;cursor:not-allowed;pointer-events:none}
@@ -208,6 +218,7 @@ input[type=number]:focus,input[type=text]:focus,select:focus{outline:none;border
     <option value="2025" selected="">2025</option>
     <option value="2026">2026</option>
   </select>
+  <span id="save-indicator" class="save-indicator" title="I dati si salvano da soli nel browser ad ogni modifica">💾 Salvataggio automatico attivo</span>
 </div>
 
 <div id="app-layout">
@@ -396,7 +407,28 @@ function initSectorData(key) {
 // PERSISTENZA
 // ═══════════════════════════════════════════════════════════
 function saveData() {
-  try { localStorage.setItem('cg_v2_' + state.currentYear, JSON.stringify(state)); } catch(e){}
+  try {
+    localStorage.setItem('cg_v2_' + state.currentYear, JSON.stringify(state));
+    markSaved();
+  } catch(e) { markSaveError(); }
+}
+function markSaved() {
+  const el = document.getElementById('save-indicator');
+  if (!el) return;
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2,'0');
+  const mm = String(now.getMinutes()).padStart(2,'0');
+  el.textContent = `💾 Salvato alle ${hh}:${mm}`;
+  el.classList.remove('save-indicator-error');
+  el.classList.add('save-indicator-flash');
+  clearTimeout(window.__saveIndicatorTimer);
+  window.__saveIndicatorTimer = setTimeout(() => el.classList.remove('save-indicator-flash'), 900);
+}
+function markSaveError() {
+  const el = document.getElementById('save-indicator');
+  if (!el) return;
+  el.textContent = '⚠️ Salvataggio non riuscito — scarica un backup ora';
+  el.classList.add('save-indicator-error');
 }
 function resetAll() {
   if (!confirm('⚠️ RESET GENERALE\n\nEliminazione di TUTTI i dati inseriti per tutti gli anni.\n\nQuesta operazione è irreversibile — salva prima un backup con "Salva file".\n\nConfermi il reset?')) return;
@@ -405,6 +437,7 @@ function resetAll() {
 }
 
 function loadData() {
+  let restored = false;
   try {
     const d = localStorage.getItem('cg_v2_' + state.currentYear);
     if (d) {
@@ -414,11 +447,14 @@ function loadData() {
       state.currentSector = s.currentSector || 'generico';
       state.locked = s.locked || false;
       state.lockHash = s.lockHash || '';
+      restored = true;
     }
   } catch(e){}
   Object.keys(SECTORS).forEach(k => initSectorData(k));
   document.getElementById('company-name').value = state.companyName;
   updateLockUI();
+  const el = document.getElementById('save-indicator');
+  if (el) el.textContent = restored ? '💾 Dati della sessione precedente ripristinati' : '💾 Salvataggio automatico attivo';
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1160,7 +1196,7 @@ function renderPiano() {
     return `<tr class="${color}">
       <td style="display:flex;align-items:center;gap:4px">
         ${typeBtn}
-        <input class="fp-name-inp" type="text" value="${row.name.replace(/"/g,'&quot;')}"
+        <input class="fp-name-inp" type="text" value="${row.name.replace(/"/g,'&quot;')}" placeholder="Nome voce..."
           onchange="updateFPRowName('${section}',${idx},this.value)" ${state.locked?'readonly':''}>
         ${lockBtns}
       </td>
@@ -1205,19 +1241,19 @@ function renderPiano() {
         ${d.income.map((r,i) => makeRow('income',i,r,'row-income')).join('')}
         ${totalRow('INCASSATO TOTALE', t.totIncome, 'row-total', t.sumI)}
         ${!state.locked?`<tr><td colspan="15" style="padding:4px">
-          <button class="btn btn-outline btn-sm" onclick="addFPRow('income','${cfg.income[0]}')">+ Aggiungi voce ricavo</button>
+          <button class="btn btn-outline btn-sm" onclick="addFPRow('income')">+ Aggiungi voce ricavo</button>
         </td></tr>`:''}
         ${sectionHeader('🟠 COSTI VARIABILI')}
         ${d.vcosts.map((r,i) => makeRow('vcosts',i,r,'row-vcost')).join('')}
         ${totalRow('TOT. COSTI VARIABILI', t.totVCost, '', t.sumV)}
         ${!state.locked?`<tr><td colspan="15" style="padding:4px">
-          <button class="btn btn-outline btn-sm" onclick="addFPRow('vcosts','Nuovo costo variabile')">+ Aggiungi costo variabile</button>
+          <button class="btn btn-outline btn-sm" onclick="addFPRow('vcosts')">+ Aggiungi costo variabile</button>
         </td></tr>`:''}
         ${sectionHeader('🔴 COSTI FISSI DI STRUTTURA')}
         ${d.fcosts.map((r,i) => makeRow('fcosts',i,r,'row-fcost')).join('')}
         ${totalRow('TOT. COSTI FISSI', t.totFCost, '', t.sumF)}
         ${!state.locked?`<tr><td colspan="15" style="padding:4px">
-          <button class="btn btn-outline btn-sm" onclick="addFPRow('fcosts','Nuovo costo fisso')">+ Aggiungi costo fisso</button>
+          <button class="btn btn-outline btn-sm" onclick="addFPRow('fcosts')">+ Aggiungi costo fisso</button>
         </td></tr>`:''}
         ${sectionHeader('👥 PERSONALE')}
         ${empRows}
@@ -1247,10 +1283,16 @@ function updateFPCell(section, idx, month, value) {
   const t = fpTotals();
   // Just save, the user will see changes on next interaction
 }
-function addFPRow(section, defaultName) {
-  const name = prompt('Nome voce:', defaultName || '') || defaultName || 'Nuova voce';
-  D().fp[section].push({name, monthly: new Array(12).fill(0)});
+function addFPRow(section) {
+  const costType = section === 'vcosts' ? 'V' : section === 'fcosts' ? 'F' : undefined;
+  D().fp[section].push({name: '', monthly: new Array(12).fill(0), costType});
   saveData(); renderModule();
+  // Porta subito il focus sul nome della nuova riga: niente popup, si scrive direttamente in tabella
+  setTimeout(() => {
+    const inputs = document.querySelectorAll('.fp-name-inp');
+    const last = inputs[inputs.length - 1];
+    if (last) { last.focus(); last.select(); }
+  }, 30);
 }
 function removeFPRow(section, idx) {
   if (!confirm('Rimuovere questa riga?')) return;
@@ -2586,15 +2628,9 @@ function showImportModal() {
       <div style="font-weight:700;color:var(--primary)">Clicca per scegliere file Excel / CSV</div>
       <div style="font-size:11px;color:var(--muted);margin-top:4px">Formati supportati: .xlsx .xls .csv</div>
     </div>
-    ${importState.rows.length > 0 ? renderImportPreview() : ''}
+    ${importState.rows.length > 0 ? renderCategorizePreview() : ''}
     ${importState.rows.length > 0 ? `
-    <div style="margin-top:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-      <label style="font-size:12px;font-weight:600">Importa come:</label>
-      <select id="imp-type" style="width:auto">
-        <option value="entrate">Entrate</option>
-        <option value="uscite">Uscite</option>
-        <option value="auto">Auto (rileva da importo +/-)</option>
-      </select>
+    <div style="margin-top:12px">
       <button class="btn btn-primary btn-sm" onclick="confirmImport()">✅ Importa ${importState.rows.length} righe nel Registro</button>
     </div>` : ''}`;
   } else if (tab === 'piano') {
@@ -2646,15 +2682,9 @@ function showImportModal() {
       <div style="font-weight:700;color:var(--primary)">Clicca per scegliere un file PDF</div>
       <div style="font-size:11px;color:var(--muted);margin-top:4px">Funziona con PDF digitali (testo selezionabile)</div>
     </div>
-    ${importState.rows.length > 0 ? renderImportPreview() : ''}
+    ${importState.rows.length > 0 ? renderCategorizePreview() : ''}
     ${importState.rows.length > 0 ? `
-    <div style="margin-top:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-      <label style="font-size:12px;font-weight:600">Importa come:</label>
-      <select id="imp-type" style="width:auto">
-        <option value="auto">Auto (rileva da importo +/-)</option>
-        <option value="entrate">Entrate</option>
-        <option value="uscite">Uscite</option>
-      </select>
+    <div style="margin-top:12px">
       <button class="btn btn-primary btn-sm" onclick="confirmImport()">✅ Importa ${importState.rows.length} righe nel Registro</button>
     </div>` : ''}`;
   }
@@ -2683,6 +2713,133 @@ function renderImportPreview() {
     </table>
   </div>
   <div style="font-size:11px;color:var(--muted);margin-top:4px">${importState.rows.length} righe trovate${importState.rows.length>50?' (mostrando prime 50)':''}</div>`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// IMPUTAZIONE AUTOMATICA A CENTRO DI COSTO/RICAVO
+// Usata da import Movimenti Bancari (Excel/CSV) e da import PDF.
+// Ogni riga viene proposta con: Entrata/Uscita, Voce di Piano Finanziario
+// (centro di costo/ricavo) e Tipologia Cashflow — tutte modificabili
+// prima di confermare l'importazione nel Registro Movimenti.
+// ═══════════════════════════════════════════════════════════
+const IMPORT_KEYWORDS = {
+  'affitto': ['affitto','locazione','canone locazione'],
+  'utenze': ['enel','eni gas','a2a','hera','acea','iren','edison','sorgenia','gas natural','telecom','tim spa','vodafone','wind tre','fastweb','acquedotto'],
+  'commercialista': ['commercialista','dottore commercialista','studio associato','parcella professionale'],
+  'assicura': ['assicura','unipol','generali','allianz','axa','reale mutua','vittoria assicurazioni'],
+  'personale': ['stipendio','stipendi','busta paga','tfr','f24 inps','inps '],
+  'tributi': ['f24','agenzia entrate','erario','iva ','tributi'],
+  'fornitor': ['fornitore','pagamento fattura','bonifico a favore'],
+  'carburante': ['esso','eni station','ip carburanti',' q8 ','tamoil','distributore carburante'],
+  'leasing': ['leasing','noleggio lungo termine','locazione finanziaria'],
+  'banca': ['commissioni','spese tenuta conto','canone conto','imposta di bollo','competenze bancarie']
+};
+function guessImportCategory(descrizione, tipo) {
+  const desc = (' ' + (descrizione || '').toLowerCase() + ' ');
+  const cfg = SECTORS[state.currentSector];
+  const fp = D().fp;
+  let candidatesFP, candidatesCF;
+  if (tipo === 'entrate') {
+    candidatesFP = [...new Set([...fp.income.map(r => r.name).filter(Boolean), ...cfg.income])];
+    candidatesCF = cfg.cashflowIn;
+  } else {
+    candidatesFP = [...new Set([...fp.vcosts.map(r => r.name).filter(Boolean), ...fp.fcosts.map(r => r.name).filter(Boolean), ...cfg.vcosts, ...cfg.fcosts])];
+    candidatesCF = cfg.cashflowOut;
+  }
+  function scoreMatch(name) {
+    const n = (name || '').toLowerCase();
+    if (!n) return 0;
+    if (desc.includes(n)) return 100;
+    const words = n.split(/[^a-zàèéìòù0-9]+/).filter(w => w.length > 3);
+    let score = 0;
+    words.forEach(w => { if (desc.includes(w)) score += 10; });
+    return score;
+  }
+  let best = null, bestScore = 0;
+  candidatesFP.forEach(name => {
+    const s = scoreMatch(name);
+    if (s > bestScore) { bestScore = s; best = name; }
+  });
+  if (bestScore < 10) {
+    // Il testo del movimento contiene una parola-spia (es. "enel" → categoria "utenze");
+    // cerchiamo poi tra le voci del cliente quella il cui nome contiene la categoria (es. "Utenze sede").
+    for (const [cat, kws] of Object.entries(IMPORT_KEYWORDS)) {
+      if (kws.some(kw => desc.includes(kw))) {
+        const match = candidatesFP.find(name => (name || '').toLowerCase().includes(cat));
+        if (match) { best = match; bestScore = 40; break; }
+      }
+    }
+  }
+  return {
+    tipologiaFP: best || candidatesFP[0] || '',
+    tipologiaCF: candidatesCF[0] || '',
+    matched: bestScore >= 10
+  };
+}
+function enrichImportRows(rows) {
+  rows.forEach(r => {
+    if (!r.tipo) r.tipo = (parseFloat(r.importo) || 0) >= 0 ? 'entrate' : 'uscite';
+    const g = guessImportCategory(r.descrizione, r.tipo);
+    r.tipologiaFP = g.tipologiaFP;
+    r.tipologiaCF = g.tipologiaCF;
+    r.matched = g.matched;
+  });
+  return rows;
+}
+function renderCategorizePreview() {
+  const rows = importState.rows;
+  if (!rows.length) return '';
+  const cfg = SECTORS[state.currentSector];
+  const fp = D().fp;
+  const incomeCat = [...new Set([...fp.income.map(r => r.name).filter(Boolean), ...cfg.income])];
+  const costCat = [...new Set([...fp.vcosts.map(r => r.name).filter(Boolean), ...fp.fcosts.map(r => r.name).filter(Boolean), ...cfg.vcosts, ...cfg.fcosts])];
+  const nMatched = rows.filter(r => r.matched).length;
+  const shown = rows.slice(0, 200);
+  const rowsHtml = shown.map((r, i) => {
+    const isEnt = r.tipo === 'entrate';
+    const fpOpts = isEnt ? incomeCat : costCat;
+    const cfOpts = isEnt ? cfg.cashflowIn : cfg.cashflowOut;
+    return `<tr class="${r.matched ? '' : 'import-row-unmatched'}">
+      <td style="white-space:nowrap">${r.data || ''}</td>
+      <td style="min-width:160px">${String(r.descrizione || '').replace(/</g,'&lt;')}</td>
+      <td style="text-align:right;white-space:nowrap">${fc(Math.abs(parseFloat(r.importo) || 0))}</td>
+      <td><select onchange="updateImportRowType(${i},this.value)" style="width:auto">
+        <option value="entrate" ${isEnt ? 'selected' : ''}>Entrata</option>
+        <option value="uscite" ${!isEnt ? 'selected' : ''}>Uscita</option>
+      </select></td>
+      <td><select onchange="updateImportRow(${i},'tipologiaFP',this.value)" style="min-width:170px">
+        ${fpOpts.map(c => `<option ${r.tipologiaFP===c?'selected':''}>${c.replace(/"/g,'&quot;')}</option>`).join('')}
+      </select></td>
+      <td><select onchange="updateImportRow(${i},'tipologiaCF',this.value)" style="min-width:150px">
+        ${cfOpts.map(c => `<option ${r.tipologiaCF===c?'selected':''}>${c.replace(/"/g,'&quot;')}</option>`).join('')}
+      </select></td>
+    </tr>`;
+  }).join('');
+  const allOk = nMatched === rows.length;
+  return `
+  <div class="import-summary ${allOk ? 'import-summary-ok' : 'import-summary-warn'}">
+    ${allOk ? '✅' : '⚠️'} <b>${nMatched}/${rows.length}</b> righe imputate automaticamente al centro di costo/ricavo giusto${!allOk ? ' — controlla le righe evidenziate in giallo' : ''}.
+    Puoi correggere ogni riga dai menu a tendina prima di importare.
+  </div>
+  <div class="import-preview">
+    <table>
+      <thead><tr><th>Data</th><th>Descrizione</th><th style="text-align:right">Importo</th><th>Tipo</th><th>Centro di Costo/Ricavo</th><th>Cashflow</th></tr></thead>
+      <tbody>${rowsHtml}</tbody>
+    </table>
+  </div>
+  <div style="font-size:11px;color:var(--muted);margin-top:4px">${rows.length} righe trovate${rows.length>200?' (mostrando prime 200 — le altre verranno importate con la stessa logica automatica)':''}</div>`;
+}
+function updateImportRow(i, field, value) {
+  importState.rows[i][field] = value;
+}
+function updateImportRowType(i, value) {
+  const r = importState.rows[i];
+  r.tipo = value;
+  const g = guessImportCategory(r.descrizione, value);
+  r.tipologiaFP = g.tipologiaFP;
+  r.tipologiaCF = g.tipologiaCF;
+  r.matched = g.matched;
+  showImportModal();
 }
 
 function handleXLSImport(input) {
@@ -2730,6 +2887,7 @@ function handleXLSImport(input) {
           alert('⚠️ Nessun movimento trovato. Verifica che il file abbia colonne Data e Importo riconoscibili.');
           input.value = ''; return;
         }
+        enrichImportRows(importState.rows);
       }
       showImportModal();
     } catch(err) { alert('❌ Errore lettura file: ' + err.message); }
@@ -2833,32 +2991,30 @@ function cleanAmount(val) {
 }
 
 function confirmImport() {
-  const typeEl = document.getElementById('imp-type');
-  const mode = typeEl ? typeEl.value : 'auto';
   const cfg = SECTORS[state.currentSector];
-  let nEnt = 0, nUsc = 0;
+  let nEnt = 0, nUsc = 0, nDaVerificare = 0;
   importState.rows.forEach(r => {
     const imp = parseFloat(r.importo) || 0;
-    let tipo;
-    if (mode === 'auto') tipo = imp >= 0 ? 'entrate' : 'uscite';
-    else tipo = mode;
+    const tipo = r.tipo || (imp >= 0 ? 'entrate' : 'uscite');
     const row = {
       data: r.data || '',
       importoLordo: Math.abs(imp),
       descrizione: r.descrizione || '',
-      tipologiaCF: tipo === 'entrate' ? (cfg.cashflowIn[0] || '') : (cfg.cashflowOut[0] || ''),
-      tipologiaFP: tipo === 'entrate' ? (cfg.income[0] || '') : (cfg.fcosts[0] || cfg.vcosts[0] || ''),
+      tipologiaCF: r.tipologiaCF || (tipo === 'entrate' ? (cfg.cashflowIn[0] || '') : (cfg.cashflowOut[0] || '')),
+      tipologiaFP: r.tipologiaFP || (tipo === 'entrate' ? (cfg.income[0] || '') : (cfg.fcosts[0] || cfg.vcosts[0] || '')),
       iva: 22
     };
     D().registro[tipo].push(row);
     if (tipo === 'entrate') nEnt++; else nUsc++;
+    if (!r.matched) nDaVerificare++;
   });
   saveData();
   closeModal();
   state.currentModule = 'registro';
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.module === 'registro'));
   renderModule();
-  alert(`✅ Importati ${nEnt} entrate e ${nUsc} uscite nel Registro Movimenti.\nVerifica e aggiusta le categorie se necessario.`);
+  const nota = nDaVerificare > 0 ? `\n⚠️ ${nDaVerificare} righe non erano state riconosciute con certezza: verificane la categoria nel Registro.` : '\n✅ Tutte le righe erano state riconosciute automaticamente.';
+  alert(`✅ Importati ${nEnt} entrate e ${nUsc} uscite nel Registro Movimenti, già imputati ai centri di costo/ricavo.${nota}`);
 }
 
 function confirmImportPiano() {
@@ -3084,6 +3240,7 @@ async function handlePDFImport(input) {
       alert('⚠️ Testo estratto dal PDF ma nessuna transazione riconosciuta.\nVerifica che il file sia un estratto conto con righe "data — descrizione — importo".');
       input.value = ''; return;
     }
+    enrichImportRows(rows);
     importState.rows = rows;
     showImportModal();
   } catch(err) {
