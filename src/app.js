@@ -1,0 +1,2953 @@
+// ═══════════════════════════════════════════════════════════
+// CONFIGURAZIONE SETTORI
+// ═══════════════════════════════════════════════════════════
+const SECTORS = {
+  generico:{label:"Generico",icon:"🏢",
+    income:["Prodotto/Servizio 1","Prodotto/Servizio 2","Prodotto/Servizio 3","Altri incassi"],
+    vcosts:["Costo del venduto / Merci","Provvigioni","Costi di trasporto","Altri costi variabili"],
+    fcosts:["Affitto","Utenze","Marketing e pubblicità","Commercialista","Consulenze","Assicurazioni","Leasing / Rate","Compenso amministratore","Formazione","Software e abbonamenti"],
+    cashflowIn:["Incassi da clienti","Entrate straordinarie","Accensione finanziamenti"],
+    cashflowOut:["Costi strutturali","Pagamenti a dipendenti","Pagamenti a fornitori","Rimborso finanziamenti","IVA e tributi"]
+  },
+  ristorazione:{label:"Ristorazione",icon:"🍽️",
+    income:["Coperti sala","Bevande e vini","Asporto / Delivery","Catering ed eventi","Bar / Caffetteria"],
+    vcosts:["Food cost (cibo)","Beverage cost (bevande)","Packaging e monouso","Costi catering esterni"],
+    fcosts:["Affitto locale","Gas e luce","Personale sala","Personale cucina","Commercialista","HACCP e igiene","Marketing","Licenze e SIAE","Manutenzione attrezzature","Leasing macchine"],
+    cashflowIn:["Incassi coperti","Incassi delivery/asporto","Catering e privé"],
+    cashflowOut:["Fornitori food & beverage","Personale","Affitto e utenze","Leasing","IVA e tributi"]
+  },
+  avvocatura:{label:"Studio Legale",icon:"⚖️",
+    income:["Parcelle penale","Parcelle civile","Parcelle commerciale","Consulenze stragiudiziali","Mediazioni","Recupero crediti"],
+    vcosts:["Contributi unificati e bolli","Spese tecniche e CTU","Trasferte e missioni"],
+    fcosts:["Affitto studio","Utenze","Collaboratori / Praticanti","Iscrizione ordine","Assicurazione RC professionale","Software gestionale","Commercialista","Formazione e aggiornamento","Cancelleria"],
+    cashflowIn:["Parcelle incassate","Acconti clienti","Rimborsi spese"],
+    cashflowOut:["Personale e collaboratori","Affitto e utenze","Spese professionali","IVA e tributi"]
+  },
+  serramentista:{label:"Serramentista",icon:"🪟",
+    income:["Vendita serramenti","Posa in opera","Riparazioni e manutenzioni","Zanzariere e complementi","Bonus/Detrazioni clienti"],
+    vcosts:["Costo materiali (infissi, vetri)","Provvigioni agenti","Trasporto e trasferte","Smaltimento vecchi serramenti","Noli e attrezzature cantiere"],
+    fcosts:["Affitto / capannone","Utenze","Flotta veicoli","Marketing e showroom","Commercialista","Assicurazioni","Attrezzature","Formazione certificazioni","Software preventivi"],
+    cashflowIn:["Acconti clienti (firma contratto)","SAL / Saldo clienti","Bonus detrazioni incassati"],
+    cashflowOut:["Fornitori materiali","Personale","Affitto e utenze","Flotta veicoli","IVA e tributi"]
+  },
+  dentistico:{label:"Studio Dentistico",icon:"🦷",
+    income:["Igiene e profilassi","Conservativa e carie","Endodonzia","Ortodonzia","Protesi (corone/ponti)","Implantologia","Chirurgia orale","Sbiancamento e estetica"],
+    vcosts:["Materiali dentali consumabili","Laboratorio odontotecnico","Implanti e protesi","Dispositivi ortodontici"],
+    fcosts:["Affitto studio","Utenze","Personale amministrativo e ASO","Manutenzione riuniti","Assicurazione RC","Iscrizione ordine","Formazione ECM","Software gestionale clinico","Sterilizzazione e smaltimento"],
+    cashflowIn:["Prestazioni incassate","Piani di pagamento rateizzati","Convenzioni e assicurazioni"],
+    cashflowOut:["Laboratorio e materiali","Personale","Affitto e utenze","Manutenzione","IVA e tributi"]
+  },
+  geometra:{label:"Studio Geometra",icon:"📐",
+    income:["Progettazione","Direzione lavori","Pratiche catastali","CILA / SCIA / Permessi","Coordinamento sicurezza","Perizie e consulenze","Compravendite immobiliari"],
+    vcosts:["Marche e bolli pratiche","Trasferte e sopralluoghi","Software specifici (a progetto)"],
+    fcosts:["Affitto / studio","Utenze","Software annui (Autocad, Primus)","Iscrizione albo","Assicurazione RC","Formazione e aggiornamento","Commercialista","Collaboratori","Cancelleria"],
+    cashflowIn:["Parcelle progettazione","Parcelle pratiche","Consulenze incassate"],
+    cashflowOut:["Personale e collaboratori","Affitto e utenze","Software e abbonamenti","IVA e tributi"]
+  },
+  edilizia:{label:"Cantieri Edili",icon:"🏗️",
+    income:["SAL Cantiere 1","SAL Cantiere 2","SAL Cantiere 3","Lavori privati / manutenzioni","Subappalti attivi"],
+    vcosts:["Materiali da costruzione","Subappalto manodopera","Noli e ponteggi","Smaltimento rifiuti","Utenze di cantiere"],
+    fcosts:["Affitto magazzino / deposito","Flotta veicoli e mezzi","Utenze sede","Assicurazioni (RC, CAR, INAIL)","Commercialista","Software cantieri","Marketing","Formazione sicurezza"],
+    cashflowIn:["Acconti clienti","SAL incassati","Saldi finali"],
+    cashflowOut:["Materiali e fornitori","Personale e subappalti","Noli e attrezzature","Affitto e utenze","IVA e tributi"]
+  },
+  accademia_beauty:{label:"Accademia Beauty",icon:"💅",
+    income:["Corsi unghie","Corsi laminazione sopracciglia","Corsi nail art avanzato","Masterclass ospiti","Kit corsi","Vendita prodotti Nails","Vendita materiali didattici","Abbonamenti e membership"],
+    vcosts:["Compenso Master (docente esterno)","Materiale corso per partecipante","Trasporti Master","Pernotto Master","Commissioni piattaforme booking","Gadget e omaggi corso"],
+    fcosts:["Affitto sala formazione","Utenze sede","Marketing e social media","Commercialista","Software gestionale / booking","Assicurazioni RC","Attrezzature e strumenti didattici","Formazione staff interno","Certificazioni e affiliazioni"],
+    cashflowIn:["Iscrizioni corsi (acconti)","Saldi iscrizioni","Vendita kit e prodotti","Sponsorizzazioni brand"],
+    cashflowOut:["Compensi Master","Acquisto materiali corsi","Affitto e utenze","Marketing","IVA e tributi"]
+  }
+};
+
+const MONTHS = ["Gen","Feb","Mar","Apr","Mag","Giu","Lug","Ago","Set","Ott","Nov","Dic"];
+const MONTHS_FULL = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
+const IVA_RATES = [0, 4, 10, 22];
+
+// ═══════════════════════════════════════════════════════════
+// STATO APPLICAZIONE
+// ═══════════════════════════════════════════════════════════
+let state = {
+  currentSector: 'generico',
+  currentModule: 'cruscotto',
+  currentYear: 2025,
+  companyName: '',
+  sectorData: {},
+  locked: false,
+  lockHash: ''
+};
+let charts = {};
+let importState = { tab: 'movimenti', rows: [], type: 'entrate', wb: null, osmSheets: null, osmParsed: null, osmSheet: '' };
+
+function initSectorData(key) {
+  if (state.sectorData[key]) return;
+  const cfg = SECTORS[key];
+  state.sectorData[key] = {
+    fp: {
+      income: cfg.income.map(n => ({name:n, monthly:new Array(12).fill(0)})),
+      vcosts: cfg.vcosts.map(n => ({name:n, costType:'V', monthly:new Array(12).fill(0)})),
+      fcosts: cfg.fcosts.map(n => ({name:n, costType:'F', monthly:new Array(12).fill(0)})),
+      employees: []
+    },
+    registro: { entrate: [], uscite: [] },
+    cruscotto: { monthly: MONTHS.map(m => ({mese:m,venduto:0,fatturato:0,incassato:0,saldoCC:0,creditiScaduti:0,debitiScaduti:0})) },
+    marginalita: { products: [] },
+    corsi: { courses: [] },
+    velocita: { fatturato12m:0, acquisti12m:0, crediti:0, debiti:0, magazzino:0,
+      liquidita:0, altriCrediti:0, debitiTributari:0, debitiDipendenti:0, fidiUtilizzati:0 },
+    pareggio: {
+      scenarios: [
+        {name:"Attuale",costiFissi:0,costiPersonale:0,compensoAdmin:0,percVariabili:0},
+        {name:"Target",costiFissi:0,costiPersonale:0,compensoAdmin:0,percVariabili:0},
+        {name:"Ideale (medio termine)",costiFissi:0,costiPersonale:0,compensoAdmin:0,percVariabili:0}
+      ]
+    },
+    patrimoniale: {
+      quarters: ["Q1","Q2","Q3","Q4"].map(q => ({
+        label:q, cassa:0, cc1:0, cc2:0, cc3:0,
+        anticipoFatture:0, fidi:0, investimenti:0,
+        mutuo1:0, mutuo2:0, creditiClienti:0,
+        rimanenze:0, debitiFornitore:0, altriDebiti:0,
+        altriCrediti:0
+      }))
+    }
+  };
+}
+
+// ═══════════════════════════════════════════════════════════
+// PERSISTENZA
+// ═══════════════════════════════════════════════════════════
+function saveData() {
+  try { localStorage.setItem('cg_v2_' + state.currentYear, JSON.stringify(state)); } catch(e){}
+}
+function resetAll() {
+  if (!confirm('⚠️ RESET GENERALE\n\nEliminazione di TUTTI i dati inseriti per tutti gli anni.\n\nQuesta operazione è irreversibile — salva prima un backup con "Salva file".\n\nConfermi il reset?')) return;
+  Object.keys(localStorage).filter(k => k.startsWith('cg_v2_')).forEach(k => localStorage.removeItem(k));
+  location.reload();
+}
+
+function loadData() {
+  try {
+    const d = localStorage.getItem('cg_v2_' + state.currentYear);
+    if (d) {
+      const s = JSON.parse(d);
+      state.sectorData = s.sectorData || {};
+      state.companyName = s.companyName || '';
+      state.currentSector = s.currentSector || 'generico';
+      state.locked = s.locked || false;
+      state.lockHash = s.lockHash || '';
+    }
+  } catch(e){}
+  Object.keys(SECTORS).forEach(k => initSectorData(k));
+  document.getElementById('company-name').value = state.companyName;
+  updateLockUI();
+}
+
+// ═══════════════════════════════════════════════════════════
+// NAVIGAZIONE
+// ═══════════════════════════════════════════════════════════
+function buildSectorTabs() {
+  const tabs = document.getElementById('sector-tabs');
+  const isLocked = state.locked;
+  let html = '';
+  if (isLocked) html += `<div class="lock-badge">🔒 Bloccato</div>`;
+  html += Object.entries(SECTORS).map(([k,v]) =>
+    `<button class="sector-btn ${k===state.currentSector?'active':''} ${isLocked&&k!==state.currentSector?'locked-btn':''}"
+      onclick="${isLocked?'':'changeSector(\''+k+'\')'}">${v.icon} ${v.label}</button>`
+  ).join('');
+  tabs.innerHTML = html;
+  // Mostra il modulo Corsi solo per Accademia Beauty
+  const isBeauty = state.currentSector === 'accademia_beauty';
+  const corsiBtn = document.getElementById('nav-corsi-btn');
+  const corsiSec = document.getElementById('nav-corsi-section');
+  if (corsiBtn) corsiBtn.style.display = isBeauty ? '' : 'none';
+  if (corsiSec) corsiSec.style.display = isBeauty ? '' : 'none';
+  // Se si cambia settore uscendo da beauty, torna al cruscotto
+  if (!isBeauty && state.currentModule === 'corsi') {
+    state.currentModule = 'cruscotto';
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.module === 'cruscotto'));
+  }
+}
+function changeSector(key) {
+  if (state.locked) { alert('🔒 Dashboard bloccata. Inserisci la password per sbloccarla.'); return; }
+  state.currentSector = key;
+  saveData();
+  buildSectorTabs();
+  renderModule();
+}
+function updateLockUI() {
+  const btn = document.getElementById('lock-btn');
+  const txt = document.getElementById('lock-btn-text');
+  const ico = document.getElementById('lock-ico');
+  if (!btn) return;
+  if (state.locked) {
+    if (txt) txt.textContent = 'Sblocca Dashboard';
+    if (ico) ico.textContent = '🔓';
+    btn.classList.add('sbtn-lock-active');
+  } else {
+    if (txt) txt.textContent = 'Configura e Blocca';
+    if (ico) ico.textContent = '🔒';
+    btn.classList.remove('sbtn-lock-active');
+  }
+}
+function changeModule(key) {
+  state.currentModule = key;
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.module === key));
+  renderModule();
+}
+function changeYear(y) {
+  state.currentYear = parseInt(y);
+  loadData();
+  buildSectorTabs();
+  renderModule();
+}
+function updateCompanyName(v) {
+  state.companyName = v;
+  saveData();
+}
+function D() { return state.sectorData[state.currentSector]; }
+
+// ═══════════════════════════════════════════════════════════
+// CALCOLI FP
+// ═══════════════════════════════════════════════════════════
+function fpTotals() {
+  const d = D().fp;
+  const totIncome = new Array(12).fill(0);
+  const totVCost = new Array(12).fill(0);
+  const totFCost = new Array(12).fill(0);
+  const totEmp = new Array(12).fill(0);
+  d.income.forEach(r => r.monthly.forEach((v,i) => totIncome[i] += v));
+  d.vcosts.forEach(r => r.monthly.forEach((v,i) => totVCost[i] += v));
+  d.fcosts.forEach(r => r.monthly.forEach((v,i) => totFCost[i] += v));
+  d.employees.forEach(emp => {
+    const m = (emp.annualCost||0)/12;
+    for(let i=0;i<12;i++) totEmp[i] += m;
+  });
+  const totCost = totVCost.map((v,i) => v + totFCost[i] + totEmp[i]);
+  const margin = totIncome.map((v,i) => v - totCost[i]);
+  const sumI = totIncome.reduce((a,b)=>a+b,0);
+  const sumV = totVCost.reduce((a,b)=>a+b,0);
+  const sumF = totFCost.reduce((a,b)=>a+b,0);
+  const sumE = totEmp.reduce((a,b)=>a+b,0);
+  const sumC = totCost.reduce((a,b)=>a+b,0);
+  const sumM = margin.reduce((a,b)=>a+b,0);
+  return {totIncome,totVCost,totFCost,totEmp,totCost,margin,sumI,sumV,sumF,sumE,sumC,sumM};
+}
+
+// ═══════════════════════════════════════════════════════════
+// UTILITY FORMATTING
+// ═══════════════════════════════════════════════════════════
+function fc(v) { if(v===0||v===null||v===undefined) return '-'; const n = Math.round(Math.abs(v)); const s = n.toString().replace(/\B(?=(\d{3})+(?!\d))/g,'.'); return (v<0?'-':'') + '€' + s; }
+function fp(v, base) { if(!base || !v) return '-'; return (v/base*100).toFixed(1)+'%'; }
+function fNum(v) { return v===0?'-':Math.round(v).toString().replace(/\B(?=(\d{3})+(?!\d))/g,'.'); }
+function colorVal(v) { return v > 0 ? 'positive' : v < 0 ? 'negative' : ''; }
+function sumArr(a) { return a.reduce((s,x)=>s+(parseFloat(x)||0), 0); }
+
+function renderModule() {
+  destroyCharts();
+  const m = state.currentModule;
+  const el = document.getElementById('main-content');
+  if (m==='piano') el.innerHTML = renderPiano();
+  else if (m==='cashflow') el.innerHTML = renderCashflow();
+  else if (m==='cruscotto') el.innerHTML = renderCruscotto();
+  else if (m==='registro') el.innerHTML = renderRegistro();
+  else if (m==='marginalita') el.innerHTML = renderMarginalita();
+  else if (m==='velocita') el.innerHTML = renderVelocita();
+  else if (m==='pareggio') el.innerHTML = renderPareggio();
+  else if (m==='patrimoniale') el.innerHTML = renderPatrimoniale();
+  else if (m==='corsi') el.innerHTML = renderCorsi();
+  else if (m==='manuale') el.innerHTML = renderManuale();
+  if (m==='cruscotto') initCruscottoCharts();
+  if (m==='pareggio') initPareggioChart();
+}
+function destroyCharts() { Object.values(charts).forEach(c => { try{c.destroy();}catch(e){} }); charts = {}; }
+// ═══════════════════════════════════════════════════════════
+// MARGINALITÀ CORSI — ACCADEMIA BEAUTY
+// ═══════════════════════════════════════════════════════════
+function newCorso() {
+  return {
+    id: Date.now(),
+    nome: '',
+    tipo: 'Corsi unghie',
+    data: '',
+    sede: '',
+    prezzoPerPax: 0,
+    numPax: 0,
+    costoMaster: 0,
+    costoMasterPerPax: 0,
+    costoMateriale: 0,
+    materialePerPax: true,
+    costoStruttura: 0,
+    costoTrasporti: 0,
+    costoPernotto: 0,
+    note: '',
+    expanded: true
+  };
+}
+
+function calcolaCorso(c) {
+  const ricavo      = (c.prezzoPerPax||0) * (c.numPax||0);
+  const masterTot   = (c.costoMaster||0) + (c.costoMasterPerPax||0) * (c.numPax||0);
+  const materialeTot= c.materialePerPax ? (c.costoMateriale||0) * (c.numPax||0) : (c.costoMateriale||0);
+  const totCosti    = masterTot + materialeTot + (c.costoStruttura||0) + (c.costoTrasporti||0) + (c.costoPernotto||0);
+  const mc          = ricavo - totCosti;
+  const mcPct       = ricavo > 0 ? mc / ricavo * 100 : 0;
+  return { ricavo, masterTot, materialeTot, totCosti, mc, mcPct };
+}
+
+function addCorso() {
+  if (!D().corsi) D().corsi = { courses: [] };
+  D().corsi.courses.push(newCorso());
+  saveData(); renderModule();
+}
+
+function removeCorso(id) {
+  if (!confirm('Eliminare questo corso?')) return;
+  D().corsi.courses = D().corsi.courses.filter(c => c.id !== id);
+  saveData(); renderModule();
+}
+
+function toggleCorso(id) {
+  const c = D().corsi.courses.find(x => x.id === id);
+  if (c) c.expanded = !c.expanded;
+  saveData(); renderModule();
+}
+
+function updateCorso(id, field, value) {
+  const c = D().corsi.courses.find(x => x.id === id);
+  if (!c) return;
+  if (field === 'materialePerPax') c[field] = value;
+  else if (['prezzoPerPax','numPax','costoMaster','costoMasterPerPax','costoMateriale','costoStruttura','costoTrasporti','costoPernotto'].includes(field))
+    c[field] = parseFloat(value) || 0;
+  else c[field] = value;
+  saveData(); renderModule();
+}
+
+function renderCorsi() {
+  if (!D().corsi) D().corsi = { courses: [] };
+  const courses = D().corsi.courses;
+
+  // KPI aggregati
+  let totRicavi=0, totCosti=0, totMC=0, bestCorso=null, bestMc=-Infinity;
+  courses.forEach(c => {
+    const r = calcolaCorso(c);
+    totRicavi += r.ricavo; totCosti += r.totCosti; totMC += r.mc;
+    if (r.mc > bestMc) { bestMc = r.mc; bestCorso = c.nome||'—'; }
+  });
+  const totMcPct = totRicavi > 0 ? totMC/totRicavi*100 : 0;
+
+  const tipi = SECTORS.accademia_beauty.income;
+
+  const mcColor = pct => pct >= 40 ? 'var(--green)' : pct >= 20 ? 'var(--orange)' : 'var(--red)';
+  const mcBg    = pct => pct >= 40 ? '#d5f5e3' : pct >= 20 ? '#fff8e1' : '#fce8e6';
+
+  const kpiCard = (ico,label,val,sub,style='') =>
+    `<div class="kpi-card" style="${style}"><div class="kpi-label">${ico} ${label}</div>
+     <div class="kpi-value">${val}</div><div class="kpi-sub">${sub}</div></div>`;
+
+  let html = `
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+  <div>
+    <h2 style="font-size:18px;font-weight:700;color:var(--primary);margin:0">💅 Marginalità Corsi</h2>
+    <div style="font-size:12px;color:var(--muted)">Analisi redditività per ogni corso erogato — Accademia Beauty</div>
+  </div>
+  <button class="btn btn-primary" onclick="addCorso()">+ Aggiungi Corso</button>
+</div>`;
+
+  // KPI aggregati
+  if (courses.length > 0) {
+    html += `<div class="kpi-grid" style="margin-bottom:20px">
+      ${kpiCard('💰','Ricavi Totali Corsi',fc(totRicavi),courses.length+' corsi registrati','border-left-color:var(--accent)')}
+      ${kpiCard('📉','Costi Totali',fc(totCosti),'Master+Materiali+Struttura+Trasferte','border-left-color:var(--orange)')}
+      ${kpiCard('📊','Margine Contribuzione',fc(totMC),totMcPct.toFixed(1)+'% del ricavo corsi',`border-left-color:${mcColor(totMcPct)}`)}
+      ${kpiCard('🏆','Corso più redditizio',bestCorso||'—','per margine assoluto','border-left-color:var(--green)')}
+    </div>`;
+  }
+
+  // Lista corsi
+  if (courses.length === 0) {
+    html += `<div class="card"><div class="card-body" style="text-align:center;padding:40px;color:var(--muted)">
+      <div style="font-size:40px;margin-bottom:12px">💅</div>
+      <div style="font-size:15px;font-weight:600;margin-bottom:8px">Nessun corso inserito</div>
+      <div style="font-size:12px;margin-bottom:16px">Clicca "+ Aggiungi Corso" per iniziare ad analizzare la marginalità dei tuoi corsi</div>
+      <button class="btn btn-primary" onclick="addCorso()">+ Aggiungi il primo corso</button>
+    </div></div>`;
+    return html;
+  }
+
+  // Riepilogo tabella
+  html += `<div class="card" style="margin-bottom:16px">
+    <div class="card-header"><div class="card-title">📋 Riepilogo Corsi</div></div>
+    <div class="table-wrap"><table class="data-table">
+      <thead><tr>
+        <th style="text-align:left">Corso</th>
+        <th>Tipo</th><th>Data</th><th>Partec.</th>
+        <th style="background:#27ae60">Ricavo</th>
+        <th style="background:#e67e22">Costi Totali</th>
+        <th style="background:#2d6da4">MC (€)</th>
+        <th style="background:#7d3c98">MC %</th>
+        <th></th>
+      </tr></thead>
+      <tbody>`;
+
+  courses.forEach(c => {
+    const r = calcolaCorso(c);
+    const clr = mcColor(r.mcPct);
+    html += `<tr>
+      <td style="font-weight:600">${c.nome||'<i style="color:var(--muted)">senza nome</i>'}</td>
+      <td style="text-align:center;font-size:11px">${c.tipo}</td>
+      <td style="text-align:center;font-size:11px">${c.data||'—'}</td>
+      <td style="text-align:center">${c.numPax||0}</td>
+      <td style="color:var(--green);font-weight:600">${fc(r.ricavo)}</td>
+      <td style="color:var(--orange);font-weight:600">${fc(r.totCosti)}</td>
+      <td style="font-weight:700;color:${clr}">${fc(r.mc)}</td>
+      <td><span class="badge" style="background:${mcBg(r.mcPct)};color:${clr}">${r.mcPct.toFixed(1)}%</span></td>
+      <td style="text-align:center;white-space:nowrap">
+        <button class="btn btn-sm btn-outline" onclick="toggleCorso(${c.id})" title="Apri/chiudi dettaglio">${c.expanded?'▲':'▼'}</button>
+        <button class="btn btn-sm btn-danger" onclick="removeCorso(${c.id})" title="Elimina corso" style="margin-left:4px">🗑</button>
+      </td>
+    </tr>`;
+
+    if (c.expanded) {
+      html += `<tr><td colspan="9" style="padding:0;border-bottom:3px solid var(--accent)">
+        <div style="background:#f8fbff;padding:20px">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px">
+
+            <!-- COL 1: Dati corso -->
+            <div>
+              <div style="font-weight:700;color:var(--primary);font-size:12px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">📋 Dati Corso</div>
+              <div class="form-group">
+                <label>Nome corso</label>
+                <input type="text" value="${c.nome||''}" placeholder="es. Corso Unghie Base" onchange="updateCorso(${c.id},'nome',this.value)">
+              </div>
+              <div class="form-group">
+                <label>Tipologia</label>
+                <select onchange="updateCorso(${c.id},'tipo',this.value)">
+                  ${tipi.map(t=>`<option value="${t}" ${c.tipo===t?'selected':''}>${t}</option>`).join('')}
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Data corso</label>
+                <input type="date" value="${c.data||''}" onchange="updateCorso(${c.id},'data',this.value)">
+              </div>
+              <div class="form-group">
+                <label>Sede / Luogo</label>
+                <input type="text" value="${c.sede||''}" placeholder="es. Sede Milano, Hotel…" onchange="updateCorso(${c.id},'sede',this.value)">
+              </div>
+              <div class="form-group">
+                <label>Note</label>
+                <textarea rows="2" style="resize:vertical" placeholder="Note libere…" onchange="updateCorso(${c.id},'note',this.value)">${c.note||''}</textarea>
+              </div>
+            </div>
+
+            <!-- COL 2: Ricavi e Costi -->
+            <div>
+              <div style="font-weight:700;color:var(--green);font-size:12px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">💰 Ricavi</div>
+              <div class="form-group">
+                <label>Prezzo per partecipante (€ netto IVA)</label>
+                <input type="number" value="${c.prezzoPerPax||''}" placeholder="0" min="0" onchange="updateCorso(${c.id},'prezzoPerPax',this.value)" step="5">
+              </div>
+              <div class="form-group">
+                <label>N° partecipanti</label>
+                <input type="number" value="${c.numPax||''}" placeholder="0" min="0" onchange="updateCorso(${c.id},'numPax',this.value)">
+              </div>
+              <div style="background:#d5f5e3;border-radius:6px;padding:10px;margin-bottom:16px;text-align:center">
+                <div style="font-size:11px;color:var(--muted)">RICAVO TOTALE CORSO</div>
+                <div style="font-size:24px;font-weight:700;color:var(--green)">${fc(r.ricavo)}</div>
+              </div>
+
+              <div style="font-weight:700;color:var(--orange);font-size:12px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">📉 Costi</div>
+              <div class="form-group">
+                <label title="Quota fissa accordata con il Master, indipendentemente dai partecipanti">🎓 Compenso Master — quota fissa (€)</label>
+                <input type="number" value="${c.costoMaster||''}" placeholder="0" min="0" onchange="updateCorso(${c.id},'costoMaster',this.value)" step="10">
+                <small style="color:var(--muted)">Cachet base accordato indipendentemente dai partecipanti</small>
+              </div>
+              <div class="form-group">
+                <label title="Quota aggiuntiva del Master per ogni partecipante iscritto">🎓 Compenso Master — quota per partecipante (€/pax)</label>
+                <input type="number" value="${c.costoMasterPerPax||''}" placeholder="0" min="0" onchange="updateCorso(${c.id},'costoMasterPerPax',this.value)" step="5">
+                <small style="color:var(--muted)">Compenso variabile in base al numero di iscritti · Totale Master: <b>${fc(r.masterTot)}</b></small>
+              </div>
+            </div>
+
+            <!-- COL 3: Altri costi e risultato -->
+            <div>
+              <div style="font-weight:700;color:var(--red);font-size:12px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">📦 Altri Costi</div>
+              <div class="form-group">
+                <label>🧴 Materiale corso</label>
+                <input type="number" value="${c.costoMateriale||''}" placeholder="0" min="0" onchange="updateCorso(${c.id},'costoMateriale',this.value)" step="5">
+                <div style="display:flex;align-items:center;gap:6px;margin-top:4px;font-size:11px">
+                  <input type="checkbox" id="perPax_${c.id}" ${c.materialePerPax?'checked':''} onchange="updateCorso(${c.id},'materialePerPax',this.checked)">
+                  <label for="perPax_${c.id}" style="cursor:pointer;color:var(--muted)">
+                    Importo per singolo partecipante · Totale: <b>${fc(r.materialeTot)}</b>
+                  </label>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>🏢 Costo struttura / affitto sala (€)</label>
+                <input type="number" value="${c.costoStruttura||''}" placeholder="0" min="0" onchange="updateCorso(${c.id},'costoStruttura',this.value)" step="10">
+              </div>
+              <div class="form-group">
+                <label>🚗 Costo trasporti Master (€)</label>
+                <input type="number" value="${c.costoTrasporti||''}" placeholder="0" min="0" onchange="updateCorso(${c.id},'costoTrasporti',this.value)" step="5">
+                <small style="color:var(--muted)">Viaggio A/R + rimborsi km o biglietti</small>
+              </div>
+              <div class="form-group">
+                <label>🏨 Costo pernotto Master (€)</label>
+                <input type="number" value="${c.costoPernotto||''}" placeholder="0" min="0" onchange="updateCorso(${c.id},'costoPernotto',this.value)" step="10">
+                <small style="color:var(--muted)">Hotel + colazione se il corso dura più giorni</small>
+              </div>
+
+              <!-- Risultato -->
+              <div style="margin-top:8px;border-top:2px solid var(--border);padding-top:12px">
+                <table style="width:100%;font-size:12px">
+                  <tr><td>Ricavo corso</td><td style="text-align:right;color:var(--green);font-weight:600">${fc(r.ricavo)}</td></tr>
+                  <tr><td>− Compenso Master totale</td><td style="text-align:right;color:var(--orange)">${fc(r.masterTot)}</td></tr>
+                  <tr><td>− Materiale corso</td><td style="text-align:right;color:var(--orange)">${fc(r.materialeTot)}</td></tr>
+                  <tr><td>− Struttura / sala</td><td style="text-align:right;color:var(--orange)">${fc(c.costoStruttura||0)}</td></tr>
+                  <tr><td>− Trasporti Master</td><td style="text-align:right;color:var(--orange)">${fc(c.costoTrasporti||0)}</td></tr>
+                  <tr><td>− Pernotto Master</td><td style="text-align:right;color:var(--orange)">${fc(c.costoPernotto||0)}</td></tr>
+                  <tr style="border-top:1px solid var(--border)"><td><b>Totale Costi</b></td><td style="text-align:right;font-weight:700;color:var(--red)">${fc(r.totCosti)}</td></tr>
+                </table>
+                <div style="margin-top:10px;padding:12px;background:${mcBg(r.mcPct)};border-radius:8px;text-align:center">
+                  <div style="font-size:11px;color:var(--muted);text-transform:uppercase">Margine di Contribuzione</div>
+                  <div style="font-size:26px;font-weight:700;color:${mcColor(r.mcPct)}">${fc(r.mc)}</div>
+                  <div style="font-size:16px;font-weight:700;color:${mcColor(r.mcPct)}">${r.mcPct.toFixed(1)}%</div>
+                  <div style="font-size:10px;color:var(--muted);margin-top:4px">
+                    ${r.mcPct>=40?'✅ Ottima redditività':r.mcPct>=20?'⚠️ Margine accettabile, monitora i costi':'🚨 Margine basso — rivedi prezzi o costi'}
+                  </div>
+                  ${c.numPax>0?`<div style="font-size:11px;color:var(--muted);margin-top:4px">MC per partecipante: <b>${fc(r.mc/c.numPax)}</b></div>`:''}
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </td></tr>`;
+    }
+  });
+
+  html += `</tbody>
+    <tfoot><tr style="background:#eaf1f8;font-weight:700">
+      <td colspan="4">TOTALE (${courses.length} corsi)</td>
+      <td style="text-align:right;color:var(--green)">${fc(totRicavi)}</td>
+      <td style="text-align:right;color:var(--orange)">${fc(totCosti)}</td>
+      <td style="text-align:right;color:${mcColor(totMcPct)}">${fc(totMC)}</td>
+      <td><span class="badge" style="background:${mcBg(totMcPct)};color:${mcColor(totMcPct)}">${totMcPct.toFixed(1)}%</span></td>
+      <td></td>
+    </tr></tfoot>
+  </table></div></div>
+
+  <div style="text-align:right;margin-top:8px">
+    <button class="btn btn-primary" onclick="addCorso()">+ Aggiungi Corso</button>
+  </div>`;
+
+  return html;
+}
+
+// ═══════════════════════════════════════════════════════════
+// MANUALE / GUIDA
+// ═══════════════════════════════════════════════════════════
+function renderManuale() {
+  const sec = (icon, title, color='var(--primary)') =>
+    `<div style="display:flex;align-items:center;gap:10px;margin:28px 0 12px;padding-bottom:8px;border-bottom:2px solid ${color}">
+       <span style="font-size:22px">${icon}</span>
+       <h2 style="font-size:16px;font-weight:700;color:${color};margin:0">${title}</h2>
+     </div>`;
+
+  const callout = (icon, text, color='var(--accent)', bg='var(--light)') =>
+    `<div style="display:flex;gap:10px;padding:12px 14px;background:${bg};border-left:4px solid ${color};border-radius:0 6px 6px 0;margin:10px 0;font-size:12px;line-height:1.6">
+       <span style="font-size:18px;flex-shrink:0">${icon}</span><div>${text}</div>
+     </div>`;
+
+  const defBox = (term, color, bg, body) =>
+    `<div style="border:1px solid ${color};border-radius:8px;overflow:hidden;margin-bottom:12px">
+       <div style="background:${color};color:#fff;padding:8px 14px;font-weight:700;font-size:13px">${term}</div>
+       <div style="padding:12px 14px;background:${bg};font-size:12px;line-height:1.7">${body}</div>
+     </div>`;
+
+  const step = (n, text) =>
+    `<div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:10px">
+       <div style="width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0">${n}</div>
+       <div style="font-size:12px;line-height:1.6;padding-top:4px">${text}</div>
+     </div>`;
+
+  const field = (label, desc) =>
+    `<div style="display:flex;gap:0;margin-bottom:6px;font-size:12px">
+       <div style="min-width:200px;font-weight:600;color:var(--primary)">${label}</div>
+       <div style="color:var(--text);line-height:1.5">${desc}</div>
+     </div>`;
+
+  return `
+<div style="max-width:900px;margin:0 auto">
+
+  <!-- HEADER -->
+  <div style="background:linear-gradient(135deg,#1a3a5c,#2d6da4);color:#fff;border-radius:10px;padding:24px 28px;margin-bottom:20px">
+    <div style="font-size:24px;font-weight:700;margin-bottom:6px">📖 Guida alla Dashboard di Controllo di Gestione</div>
+    <div style="font-size:13px;opacity:.85;line-height:1.6">Manuale operativo per l'imprenditore — dove inserire i dati, come leggere i risultati, cosa fare con le informazioni.</div>
+    <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
+      <span style="background:rgba(255,255,255,.15);padding:4px 12px;border-radius:20px;font-size:11px">📋 Piano Finanziario</span>
+      <span style="background:rgba(255,255,255,.15);padding:4px 12px;border-radius:20px;font-size:11px">📊 Cruscotto KPI</span>
+      <span style="background:rgba(255,255,255,.15);padding:4px 12px;border-radius:20px;font-size:11px">💰 Cashflow</span>
+      <span style="background:rgba(255,255,255,.15);padding:4px 12px;border-radius:20px;font-size:11px">📝 Registro</span>
+      <span style="background:rgba(255,255,255,.15);padding:4px 12px;border-radius:20px;font-size:11px">📈 Marginalità</span>
+      <span style="background:rgba(255,255,255,.15);padding:4px 12px;border-radius:20px;font-size:11px">⚡ Velocità</span>
+      <span style="background:rgba(255,255,255,.15);padding:4px 12px;border-radius:20px;font-size:11px">⚖️ Pareggio</span>
+      <span style="background:rgba(255,255,255,.15);padding:4px 12px;border-radius:20px;font-size:11px">🏦 Patrimoniale</span>
+    </div>
+  </div>
+
+  <!-- WORKFLOW -->
+  ${sec('🚀', 'Da dove iniziare — il flusso di lavoro consigliato', 'var(--green)')}
+  <div class="card"><div class="card-body">
+    <p style="font-size:12px;color:var(--muted);margin-bottom:16px">Segui questi passaggi nell'ordine indicato la prima volta che apri la dashboard. Poi ogni mese aggiorna solo i dati correnti.</p>
+    ${step(1, '<b>Seleziona il settore</b> del tuo cliente nella sidebar sinistra (Generico, Ristorazione, Studio Legale, ecc.). Il settore pre-carica le categorie di costo e ricavo più comuni per quella tipologia d\'impresa.')}
+    ${step(2, '<b>Carica il Piano Finanziario</b> — importa l\'Excel OSM oppure inserisci manualmente le previsioni annuali di fatturato, costi variabili e costi fissi mese per mese. Questo è il budget di riferimento per tutti gli altri moduli.')}
+    ${step(3, '<b>Ogni mese: aggiorna il Cruscotto KPI</b> — inserisci Venduto, Fatturato e Incassato del mese. Questi tre numeri sono il cuore del controllo di gestione mensile.')}
+    ${step(4, '<b>Registra i movimenti</b> nel Registro Movimenti — ogni entrata e uscita dal conto, con data, importo e categoria. Poi usa "Incassato da Registro" nel Cruscotto per aggiornare automaticamente il dato incassato.')}
+    ${step(5, '<b>Completa le analisi</b> quando hai i dati: Marginalità per prodotto, Velocità del Denaro, Punto di Pareggio. Questi moduli richiedono dati più stabili e si aggiornano tipicamente ogni trimestre.')}
+    ${step(6, '<b>Salva il file</b> con il bottone "💾 Salva file" e condividilo con il cliente tramite "☁️ Condividi con cliente".')}
+  </div></div>
+
+  <!-- PIANO FINANZIARIO -->
+  ${sec('📋', 'Piano Finanziario — il budget annuale')}
+  <div class="card"><div class="card-body">
+    <p style="font-size:12px;color:var(--muted);margin-bottom:14px">Il Piano Finanziario è la previsione economica annuale dell'azienda. Rappresenta gli obiettivi e serve come riferimento per tutto il resto della dashboard. Si inserisce UNA VOLTA all'anno e si aggiorna se la strategia cambia.</p>
+    ${callout('💡', '<b>Come importare da Excel OSM:</b> Clicca "Importa dati" → seleziona il file Excel "FP …" → il sistema riconosce automaticamente il formato OSM → clicca "Importa Piano FP". I dati si distribuiscono automaticamente nei 12 mesi.', 'var(--green)', '#d5f5e3')}
+    <div style="margin-top:14px">
+      <div style="font-weight:700;color:var(--green);margin-bottom:8px;font-size:12px">➕ RICAVI — cosa inserire</div>
+      ${field('Fatturato previsto', 'Le entrate attese per ogni linea di prodotto o servizio, mese per mese. Usa le categorie del settore (es. "Coperti sala", "Bevande", ecc.).')}
+      <div style="font-weight:700;color:var(--orange);margin-bottom:8px;margin-top:12px;font-size:12px">📉 COSTI VARIABILI — cosa inserire</div>
+      ${field('Costo del venduto / Merci', 'Tutto ciò che spendi PERCHÉ hai venduto. Aumenta se vendi di più, scende se vendi meno.')}
+      ${field('Provvigioni', 'Commissioni ad agenti o intermediari, calcolate sul venduto.')}
+      <div style="font-weight:700;color:var(--red);margin-bottom:8px;margin-top:12px;font-size:12px">🏗️ COSTI FISSI — cosa inserire</div>
+      ${field('Affitto', 'Canone mensile del locale o ufficio. Non cambia con il fatturato.')}
+      ${field('Personale / Dipendenti', 'Stipendi fissi, contributi, TFR. Inseriscili nella sezione "Dipendenti" per il calcolo separato del costo del lavoro.')}
+      ${field('Tutte le altre voci fisse', 'Leasing, assicurazioni, commercialista, software, utenze, formazione, marketing strutturale.')}
+    </div>
+  </div></div>
+
+  <!-- CRUSCOTTO -->
+  ${sec('📊', 'Cruscotto KPI — il controllo mensile')}
+  <div class="card"><div class="card-body">
+    <p style="font-size:12px;color:var(--muted);margin-bottom:14px">Il Cruscotto si aggiorna ogni mese. È il modulo che usi più spesso — bastano 3 numeri per capire come sta andando l'azienda.</p>
+    ${callout('⚠️', '<b>Attenzione:</b> Fatturato e Incassato sono due cose DIVERSE e non vanno mai confuse. Il Fatturato è un credito verso il cliente; l\'Incassato è denaro già in banca. Il gap tra i due è un segnale d\'allarme.', 'var(--orange)', '#fef3e0')}
+    <div style="margin-top:14px">
+      ${field('📦 Venduto', 'Ordini e contratti firmati nel mese, anche se non ancora fatturati. Esempio: hai firmato un contratto da €10.000 ma la fattura la emetterai il mese prossimo → metti €10.000 come Venduto.')}
+      ${field('🧾 Fatturato', 'Fatture EMESSE nel mese. La data conta quando emetti la fattura, non quando il cliente paga. Inseriscilo manualmente dal tuo gestionale/fatturazione.')}
+      ${field('💶 Incassato', 'Soldi RICEVUTI sul conto corrente nel mese. Usa il bottone "🔄 Incassato da Registro" per calcolarlo automaticamente dal Registro Movimenti.')}
+      ${field('🏦 Saldo C/C', 'Saldo del conto corrente principale a fine mese. Utile per monitorare la liquidità nel tempo.')}
+      ${field('⏰ Crediti scaduti', 'Totale delle fatture emesse ai clienti che sono andate oltre la scadenza senza essere pagate.')}
+      ${field('⏰ Debiti scaduti', 'Totale delle fatture fornitori che hai ricevuto e non hai ancora pagato oltre la scadenza.')}
+    </div>
+    <div style="margin-top:16px;padding:12px;background:var(--light);border-radius:6px;font-size:12px">
+      <b style="color:var(--primary)">🎯 Come leggere il Gap Fatturato − Incassato:</b><br>
+      <span style="color:var(--green)">✅ Gap &lt; 15% del fatturato</span> — normale, clienti che pagano regolarmente<br>
+      <span style="color:var(--orange)">⚠️ Gap 15–30%</span> — attenzione, qualche cliente lento o ritardatario<br>
+      <span style="color:var(--red)">🚨 Gap &gt; 30%</span> — allarme, necessità di recupero crediti urgente
+    </div>
+  </div></div>
+
+  <!-- REGISTRO -->
+  ${sec('📝', 'Registro Movimenti — il giornale di cassa')}
+  <div class="card"><div class="card-body">
+    <p style="font-size:12px;color:var(--muted);margin-bottom:14px">Registra ogni movimento reale di denaro che entra o esce dal conto. Non occorre inserire tutto il dettaglio — le categorie principali sono sufficienti per il controllo di gestione.</p>
+    ${field('Data', 'La data effettiva del pagamento ricevuto o effettuato (non la data della fattura).')}
+    ${field('Importo Lordo (€)', 'L\'importo totale comprensivo di IVA. Il sistema calcola automaticamente il netto.')}
+    ${field('IVA %', 'L\'aliquota IVA applicata. Il netto = Lordo / (1 + IVA%). Per le spese esenti inserisci 0.')}
+    ${field('Tipologia Cashflow', 'Categoria per il report di cashflow (es. "Incassi da clienti", "IVA e tributi").')}
+    ${field('Tipologia FP', 'Categoria del Piano Finanziario a cui si collega il movimento (per il confronto Budget vs Consuntivo).')}
+    ${callout('💡', 'Dopo aver inserito i movimenti del mese, vai nel <b>Cruscotto KPI</b> e clicca "🔄 Incassato da Registro" per aggiornare automaticamente il dato incassato mensile.', 'var(--accent)', 'var(--light)')}
+  </div></div>
+
+  <!-- CASHFLOW -->
+  ${sec('💰', 'Cashflow — proiezione dei flussi di cassa')}
+  <div class="card"><div class="card-body">
+    <p style="font-size:12px;color:var(--muted);margin-bottom:14px">Il Cashflow mostra le entrate e uscite PREVISTE mese per mese e il saldo finale di cassa. È diverso dal Piano Finanziario: qui contano i flussi reali di denaro, non la competenza economica.</p>
+    ${field('Entrate previste', 'Incassi attesi da clienti, finanziamenti, ecc. — quando il denaro arriva fisicamente sul conto.')}
+    ${field('Uscite previste', 'Pagamenti attesi a fornitori, dipendenti, fisco, banche — quando il denaro esce fisicamente.')}
+    ${callout('💡', 'Il confronto automatico con il Piano FP ti mostra la differenza tra budget e reale. Un saldo finale negativo indica rischio di scoperto — pianifica per tempo eventuali fidi o dilazioni.', 'var(--accent)', 'var(--light)')}
+  </div></div>
+
+  <!-- MARGINALITA -->
+  ${sec('📈', 'Marginalità — redditività per prodotto o servizio')}
+  <div class="card"><div class="card-body">
+    <p style="font-size:12px;color:var(--muted);margin-bottom:14px">Analizza quanto guadagni su ogni singolo prodotto o servizio al netto dei costi variabili diretti. Ti dice COSA vale la pena vendere di più e cosa invece ti erode il margine.</p>
+    ${field('Nome prodotto/servizio', 'La linea di offerta che vuoi analizzare (es. "Finestre in PVC", "Consulenza oraria").')}
+    ${field('Prezzo di vendita (€)', 'Il prezzo unitario al netto di IVA.')}
+    ${field('Costo variabile unitario (€)', 'Quanto ti costa PRODURRE o EROGARE una singola unità: materia prima, lavorazione, imballaggi. Non include i costi fissi.')}
+    ${field('Quantità vendute', 'Il numero di unità vendute o ore erogate nel periodo.')}
+    <div style="margin-top:12px;padding:12px;background:#fff8e1;border-radius:6px;font-size:12px">
+      <b>📐 Formula:</b> <span style="font-family:monospace">Margine di Contribuzione = (Prezzo − Costo Variabile) × Quantità</span><br>
+      <b>Margine %:</b> <span style="font-family:monospace">(Prezzo − CVar) / Prezzo × 100</span> — più alto è, meglio è. Sotto il 30% val la pena rivedere il prezzo o ridurre i costi.
+    </div>
+  </div></div>
+
+  <!-- VELOCITA -->
+  ${sec('⚡', 'Velocità del Denaro — quanto veloce gira il denaro in azienda')}
+  <div class="card"><div class="card-body">
+    <p style="font-size:12px;color:var(--muted);margin-bottom:14px">La formula C+M−F misura in quanti giorni il denaro compie il ciclo completo: lo spendi per comprare/produrre, lo "blocchi" nei crediti clienti, e lo recuperi quando incassi. Più il numero è basso (o negativo), meglio è.</p>
+    ${field('Fatturato ultimi 12 mesi', 'Non dell\'anno solare, ma degli ultimi 12 mesi a partire da oggi. Base di calcolo per i giorni clienti.')}
+    ${field('Acquisti merci ultimi 12 mesi', 'Solo acquisti di beni/merci (non servizi). Per aziende di puri servizi inserisci 0.')}
+    ${field('Crediti verso clienti (€)', 'Totale fatture emesse e non ancora incassate (sia scadute che a scadere). Dal bilancio o dal gestionale.')}
+    ${field('Debiti verso fornitori (€)', 'Totale fatture fornitori ricevute e non ancora pagate (sia scadute che a scadere).')}
+    ${field('Magazzino (€)', 'Valore delle rimanenze al costo d\'acquisto (non al prezzo di vendita).')}
+    <div style="margin-top:12px;padding:12px;background:#d1ecf1;border-radius:6px;font-size:12px">
+      <b>📐 Formula C+M−F:</b><br>
+      C = (Crediti / Fatturato) × 365 → giorni medi di incasso dai clienti<br>
+      M = (Magazzino / Acquisti) × 365 → giorni medi di permanenza in magazzino<br>
+      F = (Debiti / Acquisti) × 365 → giorni medi di pagamento ai fornitori<br>
+      <b>Risultato positivo</b> = spendi prima di incassare (attenzione alla liquidità)<br>
+      <b>Risultato negativo</b> = incassi prima di spendere (ottimo — sei finanziato da clienti e fornitori)
+    </div>
+    <div style="margin-top:14px;font-weight:700;color:var(--primary);font-size:12px;margin-bottom:8px">💼 Capitale Circolante Netto (CCN) — dati aggiuntivi</div>
+    ${field('Disponibilità liquide', 'Cassa fisica + saldi di tutti i conti correnti bancari alla data di rilevazione.')}
+    ${field('Altri crediti a breve', 'IVA a credito da compensare, acconti versati a fornitori, crediti vari a breve termine.')}
+    ${field('Debiti tributari', 'IVA da versare, saldo F24 da pagare, imposte e tasse a breve termine.')}
+    ${field('Debiti verso dipendenti', 'Stipendi del mese non ancora pagati, TFR da liquidare a breve.')}
+    ${field('Fidi bancari utilizzati', 'Importo effettivamente utilizzato di fidi bancari, scoperti di conto, autoliquidanti.')}
+  </div></div>
+
+  <!-- PAREGGIO -->
+  ${sec('⚖️', 'Punto di Pareggio — il fatturato minimo per non perdere')}
+  <div class="card"><div class="card-body">
+    <p style="font-size:12px;color:var(--muted);margin-bottom:14px">Il Break Even Point (BEP) risponde alla domanda: "Quanto devo fatturare ogni mese per coprire tutti i costi?" Sotto quella soglia l'azienda perde; sopra quella soglia comincia il vero utile.</p>
+    ${field('Costi fissi mensili (€)', 'Totale dei costi fissi aziendali al mese: affitto, leasing, assicurazioni, commercialista, software, utenze fisse.')}
+    ${field('Costi personale mensili (€)', 'Costo totale mensile di tutti i dipendenti (lordo azienda: stipendio + contributi INPS + TFR).')}
+    ${field('Compenso amministratore (€)', 'Il compenso mensile dell\'imprenditore/amministratore.')}
+    ${field('% Costi variabili su fatturato', 'Quanto pesi come costo variabile ogni euro di fatturato. Esempio: se spendi €30 di costi variabili per ogni €100 fatturati, inserisci 30%.')}
+    <div style="margin-top:12px;padding:12px;background:#fff8e1;border-radius:6px;font-size:12px">
+      <b>📐 Formula BEP:</b> <span style="font-family:monospace">BEP = Costi Fissi Totali / (1 − % Costi Variabili)</span><br>
+      Il <b>Margine di Sicurezza</b> = Fatturato Attuale − BEP → quanto puoi "perdere" di fatturato prima di andare in perdita.
+    </div>
+    ${callout('💡', 'Usa il bottone "📋 Compila da Piano FP" per popolare automaticamente i valori dallo scenario del Piano Finanziario già inserito.', 'var(--accent)', 'var(--light)')}
+  </div></div>
+
+  <!-- PATRIMONIALE -->
+  ${sec('🏦', 'Stato Patrimoniale — la fotografia dell\'azienda')}
+  <div class="card"><div class="card-body">
+    <p style="font-size:12px;color:var(--muted);margin-bottom:14px">Si compila tipicamente a fine trimestre (Q1=marzo, Q2=giugno, Q3=settembre, Q4=dicembre). Rappresenta la situazione patrimoniale netta: cosa ha l'azienda e cosa deve.</p>
+    ${field('Cassa e c/c bancari', 'Saldo fisico di cassa + saldo di ogni conto corrente a fine trimestre.')}
+    ${field('Anticipo fatture', 'Importo di fatture anticipate dalla banca (autoliquidante) ancora in essere.')}
+    ${field('Fido utilizzato', 'Utilizzo del fido di cassa o scoperto di conto.')}
+    ${field('Investimenti', 'Strumenti finanziari, depositi vincolati, partecipazioni.')}
+    ${field('Mutui residui', 'Capitale residuo da rimborsare su mutui e finanziamenti a medio-lungo termine.')}
+    ${field('Crediti clienti', 'Totale fatture emesse non ancora incassate (come nel modulo Velocità).')}
+    ${field('Rimanenze magazzino', 'Valore del magazzino a fine trimestre al costo di acquisto.')}
+    ${field('Debiti fornitori', 'Totale fatture fornitori non ancora pagate.')}
+    ${field('Altri debiti', 'Debiti vari a breve: tributari, verso dipendenti, ratei, ecc.')}
+    ${field('Altri crediti', 'Crediti vari a breve: IVA credito, acconti versati, crediti tributari.')}
+  </div></div>
+
+  <!-- DEFINIZIONI -->
+  ${sec('📚', 'Definizioni chiave', '#7d3c98')}
+
+  <div class="card"><div class="card-body">
+
+    <h3 style="font-size:14px;color:var(--primary);margin-bottom:14px;padding-bottom:6px;border-bottom:1px solid var(--border)">💡 Costo Fisso vs Costo Variabile</h3>
+
+    ${defBox('📌 COSTO FISSO', '#1a3a5c', '#f0f4f8',
+      `Un costo fisso è un costo che l'azienda sostiene <b>indipendentemente da quanto vende o produce</b>. Esiste anche se il fatturato è zero — è il "peso" strutturale dell'azienda.<br><br>
+      <b>Esempi tipici:</b><br>
+      • Affitto del locale o dell'ufficio<br>
+      • Stipendi dei dipendenti fissi (non legati alla produzione)<br>
+      • Leasing di auto, macchinari, attrezzature<br>
+      • Assicurazioni aziendali<br>
+      • Commercialista / consulenze continuative<br>
+      • Abbonamenti software (gestionali, CRM, ecc.)<br>
+      • Utenze base (luce, gas, telefonia fissa)<br>
+      • Quote associative, iscrizioni albi<br>
+      • Compenso dell'amministratore/imprenditore<br><br>
+      <b>Domanda chiave:</b> <i>"Questo costo lo pago anche se non vendo niente questo mese?"</i> → Se sì, è un costo fisso.`
+    )}
+
+    ${defBox('📊 COSTO VARIABILE', '#e67e22', '#fef9f0',
+      `Un costo variabile è un costo che <b>aumenta o diminuisce proporzionalmente al fatturato o alla produzione</b>. Più vendi, più spendi; se non vendi, non lo sostieni.<br><br>
+      <b>Esempi tipici:</b><br>
+      • Materie prime e semilavorati<br>
+      • Costo delle merci acquistate per la rivendita<br>
+      • Provvigioni ad agenti di vendita (% sul venduto)<br>
+      • Costi di trasporto e consegna per ordine<br>
+      • Imballaggi e packaging<br>
+      • Costi di produzione variabili (energia per produzione, ecc.)<br>
+      • Food cost (ristorazione: costo del cibo consumato)<br>
+      • Commissioni su vendite online (marketplace, ecc.)<br><br>
+      <b>Domanda chiave:</b> <i>"Questo costo cresce se vendo di più?"</i> → Se sì, è un costo variabile.`
+    )}
+
+    <div style="background:#f9f0ff;border-radius:8px;padding:14px;font-size:12px;margin-bottom:20px">
+      <b style="color:#7d3c98">⚠️ Il caso dei dipendenti:</b> I dipendenti <i>fissi</i> (amministrativi, addetti alle vendite con stipendio base) sono un <b>Costo Fisso</b>. I lavoratori a chiamata, stagionali o pagati a ore in base alla produzione sono un <b>Costo Variabile</b>. In molte PMI il personale è misto — separalo nelle due categorie.
+    </div>
+
+    <h3 style="font-size:14px;color:var(--primary);margin:20px 0 14px;padding-bottom:6px;border-bottom:1px solid var(--border)">💰 Il ciclo Venduto → Fatturato → Incassato</h3>
+
+    <div style="display:flex;align-items:center;gap:0;margin-bottom:14px;flex-wrap:wrap">
+      <div style="text-align:center;padding:12px 16px;background:var(--light);border-radius:8px;flex:1;min-width:130px">
+        <div style="font-size:18px">📦</div>
+        <div style="font-weight:700;color:var(--primary);font-size:13px">VENDUTO</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">Ordine o contratto firmato. Il cliente ha confermato ma la fattura non è ancora emessa.</div>
+      </div>
+      <div style="font-size:24px;color:var(--muted);padding:0 8px">→</div>
+      <div style="text-align:center;padding:12px 16px;background:#fff8e1;border-radius:8px;flex:1;min-width:130px">
+        <div style="font-size:18px">🧾</div>
+        <div style="font-weight:700;color:var(--orange);font-size:13px">FATTURATO</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">Fattura emessa al cliente. È un credito: il cliente deve ancora pagare.</div>
+      </div>
+      <div style="font-size:24px;color:var(--muted);padding:0 8px">→</div>
+      <div style="text-align:center;padding:12px 16px;background:#d5f5e3;border-radius:8px;flex:1;min-width:130px">
+        <div style="font-size:18px">💶</div>
+        <div style="font-weight:700;color:var(--green);font-size:13px">INCASSATO</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">Soldi arrivati sul conto corrente. Solo questo è liquidità reale.</div>
+      </div>
+    </div>
+
+    ${defBox('🚨 IL GAP FATTURATO − INCASSATO', '#e74c3c', '#fef9f8',
+      `La differenza tra Fatturato e Incassato rappresenta i <b>crediti non ancora riscossi</b>. Un gap elevato significa:<br>
+      • Clienti che pagano lentamente o non pagano<br>
+      • Rischio liquidità: l'azienda "fattura ricchezza" ma non ha soldi in cassa<br>
+      • Necessità di recupero crediti o anticipo fatture in banca<br><br>
+      <b>Soglie di allarme:</b><br>
+      <span style="color:var(--green)">✅ Gap &lt; 15% del fatturato</span> → clienti che pagano nei tempi<br>
+      <span style="color:var(--orange)">⚠️ Gap 15–30%</span> → da monitorare, qualche ritardo<br>
+      <span style="color:var(--red)">🚨 Gap &gt; 30%</span> → emergenza crediti, azione immediata`
+    )}
+
+    <h3 style="font-size:14px;color:var(--primary);margin:20px 0 14px;padding-bottom:6px;border-bottom:1px solid var(--border)">📐 Margine di Contribuzione</h3>
+    <div style="font-size:12px;line-height:1.8;margin-bottom:12px">
+      Il <b>Margine di Contribuzione</b> (MC) è la parte del ricavo che "contribuisce" a coprire i costi fissi e a generare utile.<br><br>
+      <span style="font-family:monospace;background:#f0f4f8;padding:4px 8px;border-radius:4px">MC = Fatturato − Costi Variabili</span><br><br>
+      <b>Esempio:</b> vendi a €100, i costi variabili (materie prime, provvigioni) sono €40 → MC = €60.<br>
+      Quei €60 servono prima a coprire i costi fissi; quello che avanza è l'utile operativo.
+    </div>
+
+    <h3 style="font-size:14px;color:var(--primary);margin:20px 0 14px;padding-bottom:6px;border-bottom:1px solid var(--border)">⚖️ Punto di Pareggio (Break Even Point)</h3>
+    <div style="font-size:12px;line-height:1.8;margin-bottom:12px">
+      Il BEP è il fatturato minimo per non andare in perdita. Sotto questo livello l'azienda erode patrimonio; sopra genera utile.<br><br>
+      <span style="font-family:monospace;background:#f0f4f8;padding:4px 8px;border-radius:4px">BEP = Costi Fissi Totali / (1 − % Costi Variabili su Fatturato)</span><br><br>
+      <b>Esempio:</b> Costi fissi €20.000/mese, % variabili 40% → BEP = €20.000 / 0,60 = <b>€33.333/mese</b>.<br>
+      Significa che devi fatturare almeno €33.333 ogni mese per pareggiare. Tutto quello che fatturi in più contribuisce all'utile.
+    </div>
+
+  </div></div>
+
+  <!-- SALVATAGGIO -->
+  ${sec('💾', 'Salvare, esportare e condividere')}
+  <div class="card"><div class="card-body" style="font-size:12px;line-height:1.8">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div>
+        <div style="font-weight:700;margin-bottom:8px">💾 Salva file (JSON)</div>
+        Scarica un file .json con tutti i dati inseriti. Conservalo come backup e usalo per ricaricare la dashboard in futuro con "📂 Carica file".
+      </div>
+      <div>
+        <div style="font-weight:700;margin-bottom:8px">📊 Esporta Excel</div>
+        Genera un file Excel con tutti i moduli: Piano FP, Cruscotto, Registro, Cashflow, Velocità. Utile per invii al commercialista o al cliente.
+      </div>
+      <div>
+        <div style="font-weight:700;margin-bottom:8px">☁️ Condividi con cliente</div>
+        Guida su come condividere il file HTML via Google Drive, Dropbox o email in modo che il cliente possa aprirlo nel proprio browser senza installare nulla.
+      </div>
+      <div>
+        <div style="font-weight:700;margin-bottom:8px">🗑️ Reset Generale</div>
+        Cancella tutti i dati e ricomincia da zero. <b style="color:var(--red)">Irreversibile</b> — salva sempre un backup JSON prima di usarlo.
+      </div>
+    </div>
+  </div></div>
+
+  <div style="text-align:center;color:var(--muted);font-size:11px;margin:20px 0 8px">Dashboard Controllo di Gestione — OSM Methodology</div>
+</div>`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// PIANO FINANZIARIO
+// ═══════════════════════════════════════════════════════════
+function renderPiano() {
+  const d = D().fp;
+  const t = fpTotals();
+  const cfg = SECTORS[state.currentSector];
+  function makeRow(section, idx, row, color) {
+    const tot = sumArr(row.monthly);
+    const pct = t.sumI > 0 ? (tot/t.sumI*100).toFixed(1)+'%' : '-';
+    const cells = row.monthly.map((v,mi) =>
+      `<td><input class="cell-input" type="number" value="${v||''}" placeholder="0"
+        onchange="updateFPCell('${section}',${idx},${mi},this.value)" step="0.01"></td>`
+    ).join('');
+    const canType = (section === 'vcosts' || section === 'fcosts');
+    const rowType = row.costType || (section === 'vcosts' ? 'V' : section === 'fcosts' ? 'F' : '');
+    const typeBtn = canType ? `<select class="cost-type-sel cost-type-${rowType}" title="Tipo costo: F=Fisso V=Variabile"
+      onchange="updateFPRowType('${section}',${idx},this.value);this.className='cost-type-sel cost-type-'+this.value">
+      <option value="F" ${rowType==='F'?'selected':''}>F</option>
+      <option value="V" ${rowType==='V'?'selected':''}>V</option>
+    </select>` : '';
+    const lockBtns = state.locked ? '' :
+      `<button class="btn btn-sm" style="background:#fee;color:var(--red);border:none;padding:1px 5px;cursor:pointer;font-size:10px" onclick="removeFPRow('${section}',${idx})">✕</button>`;
+    return `<tr class="${color}">
+      <td style="display:flex;align-items:center;gap:4px">
+        ${typeBtn}
+        <input class="fp-name-inp" type="text" value="${row.name.replace(/"/g,'&quot;')}"
+          onchange="updateFPRowName('${section}',${idx},this.value)" ${state.locked?'readonly':''}>
+        ${lockBtns}
+      </td>
+      <td class="${colorVal(tot)}">${fc(tot)}</td><td>${pct}</td>${cells}</tr>`;
+  }
+  function totalRow(label, arr, cssClass, sumVal) {
+    const cells = arr.map(v => `<td><b>${fc(v)}</b></td>`).join('');
+    const pct = t.sumI > 0 && sumVal !== undefined ? (sumVal/t.sumI*100).toFixed(1)+'%' : '-';
+    return `<tr class="row-total ${cssClass||''}"><td><b>${label}</b></td><td><b>${fc(sumVal!==undefined?sumVal:sumArr(arr))}</b></td><td>${pct}</td>${cells}</tr>`;
+  }
+  function sectionHeader(label) {
+    return `<tr class="row-section-header"><td colspan="15">${label}</td></tr>`;
+  }
+  const empRows = d.employees.map((emp,i) => {
+    const monthly = (emp.annualCost||0)/12;
+    const cells = MONTHS.map(() => `<td style="color:var(--muted)">${fc(monthly)}</td>`).join('');
+    return `<tr><td style="display:flex;align-items:center;gap:4px">
+      <span style="flex:1">${emp.name}</span>
+      <button class="btn btn-sm" style="background:#fee;color:var(--red);border:none;padding:1px 5px;cursor:pointer;font-size:10px" onclick="removeFPEmployee(${i})">✕</button>
+    </td><td>${fc(emp.annualCost)}</td><td>${t.sumI>0?(monthly*12/t.sumI*100).toFixed(1)+'%':'-'}</td>${cells}</tr>`;
+  }).join('');
+  const marginPct = t.sumI > 0 ? (t.sumM/t.sumI*100).toFixed(1) : 0;
+  const marginClass = t.sumM >= 0 ? 'badge-green' : 'badge-red';
+  return `
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">📋 Piano Finanziario ${state.currentYear} — ${SECTORS[state.currentSector].icon} ${SECTORS[state.currentSector].label}</div>
+    <div class="flex">
+      <span class="badge ${marginClass}">Margine: ${fc(t.sumM)} (${marginPct}%)</span>
+    </div>
+  </div>
+  <div class="card-body" style="padding:8px">
+    <div class="table-wrap">
+    <table class="data-table">
+      <thead><tr>
+        <th style="min-width:180px">Categoria</th>
+        <th>Totale Annuo</th><th>% Inc.</th>
+        ${MONTHS.map(m=>`<th>${m}</th>`).join('')}
+      </tr></thead>
+      <tbody>
+        ${sectionHeader('🟢 INCASSATO (netto IVA)')}
+        ${d.income.map((r,i) => makeRow('income',i,r,'row-income')).join('')}
+        ${totalRow('INCASSATO TOTALE', t.totIncome, 'row-total', t.sumI)}
+        ${!state.locked?`<tr><td colspan="15" style="padding:4px">
+          <button class="btn btn-outline btn-sm" onclick="addFPRow('income','${cfg.income[0]}')">+ Aggiungi voce ricavo</button>
+        </td></tr>`:''}
+        ${sectionHeader('🟠 COSTI VARIABILI')}
+        ${d.vcosts.map((r,i) => makeRow('vcosts',i,r,'row-vcost')).join('')}
+        ${totalRow('TOT. COSTI VARIABILI', t.totVCost, '', t.sumV)}
+        ${!state.locked?`<tr><td colspan="15" style="padding:4px">
+          <button class="btn btn-outline btn-sm" onclick="addFPRow('vcosts','Nuovo costo variabile')">+ Aggiungi costo variabile</button>
+        </td></tr>`:''}
+        ${sectionHeader('🔴 COSTI FISSI DI STRUTTURA')}
+        ${d.fcosts.map((r,i) => makeRow('fcosts',i,r,'row-fcost')).join('')}
+        ${totalRow('TOT. COSTI FISSI', t.totFCost, '', t.sumF)}
+        ${!state.locked?`<tr><td colspan="15" style="padding:4px">
+          <button class="btn btn-outline btn-sm" onclick="addFPRow('fcosts','Nuovo costo fisso')">+ Aggiungi costo fisso</button>
+        </td></tr>`:''}
+        ${sectionHeader('👥 PERSONALE')}
+        ${empRows}
+        ${totalRow('TOT. PERSONALE', t.totEmp.map(()=>t.sumE/12), '', t.sumE)}
+        ${!state.locked?`<tr><td colspan="15" style="padding:4px">
+          <button class="btn btn-outline btn-sm" onclick="openAddEmployeeModal()">+ Aggiungi dipendente/collaboratore</button>
+        </td></tr>`:''}
+        ${sectionHeader('RIEPILOGO')}
+        ${totalRow('TOTALE COSTI', t.totCost, '', t.sumC)}
+        <tr class="row-margin">
+          <td><b>💹 MARGINE OPERATIVO</b></td>
+          <td class="${colorVal(t.sumM)}"><b>${fc(t.sumM)}</b></td>
+          <td class="${colorVal(t.sumM)}"><b>${t.sumI>0?(t.sumM/t.sumI*100).toFixed(1)+'%':'-'}</b></td>
+          ${t.margin.map(v=>`<td class="${colorVal(v)}"><b>${fc(v)}</b></td>`).join('')}
+        </tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</div>`;
+}
+
+function updateFPCell(section, idx, month, value) {
+  D().fp[section][idx].monthly[parseInt(month)] = parseFloat(value) || 0;
+  saveData();
+  // Update totals in place without full re-render
+  const t = fpTotals();
+  // Just save, the user will see changes on next interaction
+}
+function addFPRow(section, defaultName) {
+  const name = prompt('Nome voce:', defaultName || '') || defaultName || 'Nuova voce';
+  D().fp[section].push({name, monthly: new Array(12).fill(0)});
+  saveData(); renderModule();
+}
+function removeFPRow(section, idx) {
+  if (!confirm('Rimuovere questa riga?')) return;
+  D().fp[section].splice(idx, 1);
+  saveData(); renderModule();
+}
+function openAddEmployeeModal() {
+  document.getElementById('modal-body').innerHTML = `
+    <h3>👥 Aggiungi Dipendente / Collaboratore</h3>
+    <div class="form-group"><label>Nome</label><input type="text" id="emp-name" placeholder="Mario Rossi"></div>
+    <div class="form-group"><label>Costo Azienda Annuo (€)</label><input type="number" id="emp-cost" placeholder="35000"></div>
+    <div class="flex mt-3">
+      <button class="btn btn-primary" onclick="saveEmployee()">Aggiungi</button>
+      <button class="btn btn-outline" onclick="closeModal()">Annulla</button>
+    </div>`;
+  document.getElementById('modal-overlay').classList.add('open');
+}
+function saveEmployee() {
+  const name = document.getElementById('emp-name').value.trim() || 'Dipendente';
+  const cost = parseFloat(document.getElementById('emp-cost').value) || 0;
+  D().fp.employees.push({name, annualCost: cost});
+  saveData(); closeModal(); renderModule();
+}
+function removeFPEmployee(idx) {
+  if (!confirm('Rimuovere questo dipendente?')) return;
+  D().fp.employees.splice(idx, 1);
+  saveData(); renderModule();
+}
+function updateFPRowName(section, idx, value) {
+  D().fp[section][idx].name = value;
+  saveData();
+}
+function updateFPRowType(section, idx, value) {
+  D().fp[section][idx].costType = value;
+  saveData();
+  // Move row to the correct section if type changed
+  if (section === 'vcosts' && value === 'F') {
+    const row = D().fp.vcosts.splice(idx, 1)[0];
+    row.costType = 'F';
+    D().fp.fcosts.push(row);
+    saveData(); renderModule();
+  } else if (section === 'fcosts' && value === 'V') {
+    const row = D().fp.fcosts.splice(idx, 1)[0];
+    row.costType = 'V';
+    D().fp.vcosts.push(row);
+    saveData(); renderModule();
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// CRUSCOTTO KPI
+// ═══════════════════════════════════════════════════════════
+function renderCruscotto() {
+  const d = D().cruscotto.monthly;
+  const t = fpTotals();
+  // Annual KPIs
+  const totVend = sumArr(d.map(m => m.venduto));
+  const totFatt = sumArr(d.map(m => m.fatturato));
+  const totInc  = sumArr(d.map(m => m.incassato));
+  const totGap  = totFatt - totInc; // positivo = fatturato ma non incassato
+  const gapPctAnn = totFatt > 0 ? totGap / totFatt * 100 : 0;
+  const avgSaldo = d.filter(m=>m.saldoCC).reduce((s,m)=>s+m.saldoCC,0) / (d.filter(m=>m.saldoCC).length||1);
+  const totCred = sumArr(d.map(m => m.creditiScaduti));
+  const incidCF = t.sumI > 0 ? ((t.sumF+t.sumE)/t.sumI*100).toFixed(1) : 0;
+  const margP = t.sumI > 0 ? ((t.sumI - t.sumV)/t.sumI*100).toFixed(1) : 0;
+  const margS = t.sumI > 0 ? (t.sumM/t.sumI*100).toFixed(1) : 0;
+
+  // Alarm thresholds for fatturato-incassato gap
+  function gapStyle(gap, fatt) {
+    if (!fatt || gap <= 0) return { color:'var(--green)', icon:'✅', bg:'' };
+    const pct = gap / fatt * 100;
+    if (pct > 30) return { color:'var(--red)',    icon:'🚨', bg:'background:rgba(231,76,60,.08)' };
+    if (pct > 15) return { color:'var(--orange)', icon:'⚠️', bg:'background:rgba(230,126,34,.06)' };
+    return { color:'var(--muted)', icon:'', bg:'' };
+  }
+  const annGap = gapStyle(totGap, totFatt);
+
+  function kpiCard(icon, label, value, sub, cls='') {
+    return `<div class="kpi-card" style="${cls}">
+      <div class="kpi-label">${icon} ${label}</div>
+      <div class="kpi-value">${value}</div>
+      ${sub ? `<div class="kpi-sub">${sub}</div>` : ''}
+    </div>`;
+  }
+
+  const tableRows = d.map((m,mi) => {
+    const fatt = m.fatturato || 0;
+    const inc  = m.incassato || 0;
+    const gap  = fatt - inc;
+    const gs   = gapStyle(gap, fatt);
+    const pVend = mi>0 && d[mi-1].venduto ? ((m.venduto-d[mi-1].venduto)/d[mi-1].venduto*100).toFixed(0) : null;
+    const pInc  = mi>0 && d[mi-1].incassato ? ((m.incassato-d[mi-1].incassato)/d[mi-1].incassato*100).toFixed(0) : null;
+    return `<tr style="${gs.bg}">
+      <td>${MONTHS_FULL[mi]}</td>
+      <td><input class="cell-input" type="number" value="${m.venduto||''}" placeholder="0" onchange="updateCruscotto(${mi},'venduto',this.value)" style="width:85px"></td>
+      <td style="font-size:11px;color:${pVend>0?'var(--green)':pVend<0?'var(--red)':'var(--muted)'}">${pVend!==null?(pVend>0?'▲':'▼')+Math.abs(pVend)+'%':''}</td>
+      <td><input class="cell-input" type="number" value="${fatt||''}" placeholder="0" onchange="updateCruscotto(${mi},'fatturato',this.value)" style="width:85px"></td>
+      <td><input class="cell-input" type="number" value="${inc||''}" placeholder="0" onchange="updateCruscotto(${mi},'incassato',this.value)" style="width:85px"></td>
+      <td style="font-size:11px;color:${pInc>0?'var(--green)':pInc<0?'var(--red)':'var(--muted)'}">${pInc!==null?(pInc>0?'▲':'▼')+Math.abs(pInc)+'%':''}</td>
+      <td style="font-weight:700;color:${gs.color};text-align:right;padding:4px 8px">${fatt||inc ? gs.icon+' '+fc(gap) : ''}</td>
+      <td><input class="cell-input" type="number" value="${m.saldoCC||''}" placeholder="0" onchange="updateCruscotto(${mi},'saldoCC',this.value)" style="width:85px"></td>
+      <td><input class="cell-input" type="number" value="${m.creditiScaduti||''}" placeholder="0" onchange="updateCruscotto(${mi},'creditiScaduti',this.value)" style="width:85px"></td>
+      <td><input class="cell-input" type="number" value="${m.debitiScaduti||''}" placeholder="0" onchange="updateCruscotto(${mi},'debitiScaduti',this.value)" style="width:85px"></td>
+    </tr>`;
+  }).join('');
+
+  return `
+<div class="kpi-grid">
+  ${kpiCard('💰','Venduto Annuo', fc(totVend), 'Ordini confermati')}
+  ${kpiCard('📄','Fatturato Annuo', fc(totFatt), 'Emesso (netto IVA)')}
+  ${kpiCard('✅','Incassato Annuo', fc(totInc), 'Riscosso reale','border-left-color:var(--green)')}
+  ${kpiCard(annGap.icon||'📊', 'Gap Fatt−Inc', fc(totGap),
+    totFatt>0 ? gapPctAnn.toFixed(1)+'% del fatturato non ancora incassato' : 'Inserisci fatturato e incassato',
+    totGap>0 && gapPctAnn>30 ? 'border-left-color:var(--red)' : totGap>0 && gapPctAnn>15 ? 'border-left-color:var(--orange)' : 'border-left-color:var(--green)')}
+  ${kpiCard('📈','1° Margine', margP+'%', fc(t.sumI-t.sumV)+' — dopo costi variabili','border-left-color:var(--orange)')}
+  ${kpiCard('💹','2° Margine', margS+'%', fc(t.sumM)+' — dopo tutti i costi', t.sumM>=0?'border-left-color:var(--green)':'border-left-color:var(--red)')}
+  ${kpiCard('🏗️','Incidenza CF', incidCF+'%', fc(t.sumF+t.sumE)+' su Piano FP','border-left-color:var(--red)')}
+  ${kpiCard('🏦','Saldo CC Medio', fc(avgSaldo), 'Media mensile','border-left-color:var(--accent)')}
+</div>
+${totGap > 0 && gapPctAnn > 15 ? `
+<div style="background:${gapPctAnn>30?'#fce8e6':'#fef3e0'};border:1px solid ${gapPctAnn>30?'var(--red)':'var(--orange)'};border-radius:6px;padding:10px 14px;margin-bottom:16px;font-size:12px">
+  ${gapPctAnn>30?'🚨':'⚠️'} <b>Allarme crediti:</b> ${fc(totGap)} fatturati ma non ancora incassati (${gapPctAnn.toFixed(1)}% del fatturato).
+  ${gapPctAnn>30?'Situazione critica — verifica i crediti scaduti e avvia il recupero immediato.':'Monitorare — controlla le scadenze dei clienti.'}
+</div>` : ''}
+<div class="card" style="margin-bottom:16px">
+  <div class="card-header"><div class="card-title">📊 Andamento Annuo</div></div>
+  <div class="card-body"><div class="chart-container"><canvas id="cruscotto-chart"></canvas></div></div>
+</div>
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">📅 Dettaglio Mensile</div>
+    <button class="btn btn-sm btn-outline" onclick="importFromRegistroCruscotto()" title="Calcola Incassato dal Registro Movimenti">🔄 Incassato da Registro</button>
+  </div>
+  <div style="font-size:11px;color:var(--muted);padding:6px 16px;background:#f8fafc;border-bottom:1px solid var(--border)">
+    <b>Fatturato</b> = fatture emesse al cliente — inserisci manualmente mese per mese &nbsp;|&nbsp;
+    <b>Incassato</b> = soldi effettivamente riscossi sul conto (usa "Incassato da Registro") &nbsp;|&nbsp;
+    <b style="color:var(--red)">Gap = Fatturato − Incassato</b> → allarme se il cliente ha fatture non pagate oltre soglia
+  </div>
+  <div class="card-body" style="padding:8px">
+  <div class="table-wrap">
+  <table class="data-table">
+    <thead><tr>
+      <th style="min-width:100px">Mese</th>
+      <th>Venduto (€)</th><th>Δ%</th>
+      <th>Fatturato (€)</th>
+      <th>Incassato (€)</th><th>Δ%</th>
+      <th style="background:#7d3c98;color:#fff">Gap Fatt−Inc</th>
+      <th>Saldo CC (€)</th>
+      <th>Crediti Scaduti (€)</th>
+      <th>Debiti Scaduti (€)</th>
+    </tr></thead>
+    <tbody>${tableRows}</tbody>
+  </table></div></div>
+</div>`;
+}
+
+function updateCruscotto(mi, field, value) {
+  D().cruscotto.monthly[mi][field] = parseFloat(value) || 0;
+  saveData();
+}
+function importFromRegistroCruscotto() {
+  // Importa SOLO l'incassato (soldi effettivamente ricevuti sul conto).
+  // Il Fatturato è separato: viene dal Piano FP (budget) o inserito manualmente.
+  const reg = D().registro;
+  const monthly = D().cruscotto.monthly;
+  monthly.forEach(m => { m.incassato = 0; }); // reset solo incassato, NON fatturato
+  reg.entrate.forEach(e => {
+    const m = getMonth(e.data);
+    if (m >= 0) {
+      const netto = (parseFloat(e.importoLordo)||0) / (1 + (parseFloat(e.iva)||0)/100);
+      monthly[m].incassato += netto;
+    }
+  });
+  saveData(); renderModule();
+  alert('✅ Incassato aggiornato dal Registro Movimenti.\nIl Fatturato (emesso) rimane invariato — usa "Fatturato da Piano FP" per caricarlo.');
+}
+function syncCruscottoFromFP() {
+  // Carica i valori mensili del Piano FP nella colonna FATTURATO (budget emesso).
+  // L'incassato rimane separato e viene dal Registro Movimenti (riscosso reale).
+  const t = fpTotals();
+  if (!t.sumI) { alert('⚠️ Piano FP vuoto. Inserisci prima i dati nel Piano Finanziario.'); return; }
+  const monthly = D().cruscotto.monthly;
+  t.totIncome.forEach((v, mi) => { if (v > 0) monthly[mi].fatturato = Math.round(v); });
+  saveData(); renderModule();
+  alert('✅ Fatturato mensile caricato dal Piano FP (valori budget).\nOra inserisci l\'Incassato reale con "Incassato da Registro" — il Gap mostrerà la differenza.');
+}
+function getMonth(dateStr) {
+  if (!dateStr) return -1;
+  const d = new Date(dateStr);
+  return isNaN(d.getMonth()) ? -1 : d.getMonth();
+}
+function initCruscottoCharts() {
+  const ctx = document.getElementById('cruscotto-chart');
+  if (!ctx || typeof Chart === 'undefined') return;
+  const d = D().cruscotto.monthly;
+  const t = fpTotals();
+  const hasFatt = d.some(m => m.fatturato > 0);
+  const hasInc  = d.some(m => m.incassato > 0);
+  const datasets = [];
+  if (d.some(m=>m.venduto>0))
+    datasets.push({ label:'Venduto', data: d.map(m=>m.venduto), backgroundColor:'rgba(45,109,164,.2)', borderColor:'var(--accent)', borderWidth:1.5, order:4 });
+  if (hasFatt)
+    datasets.push({ label:'Fatturato (emesso)', data: d.map(m=>m.fatturato), type:'line', tension:.4, fill:false, borderColor:'#f39c12', backgroundColor:'rgba(243,156,18,.08)', borderWidth:2, borderDash:[5,4], pointRadius:4, order:2 });
+  if (hasInc)
+    datasets.push({ label:'Incassato (riscosso)', data: d.map(m=>m.incassato), type:'line', tension:.4, fill:false, borderColor:'var(--green)', backgroundColor:'rgba(39,174,96,.08)', borderWidth:2.5, pointRadius:5, order:1 });
+  if (hasFatt && hasInc)
+    datasets.push({ label:'Gap Fatt−Inc', data: d.map(m=>(m.fatturato||0)-(m.incassato||0)), backgroundColor: d.map(m => {
+      const g = (m.fatturato||0)-(m.incassato||0);
+      const pct = m.fatturato > 0 ? g/m.fatturato*100 : 0;
+      return pct > 30 ? 'rgba(231,76,60,.5)' : pct > 15 ? 'rgba(230,126,34,.4)' : 'rgba(127,140,141,.25)';
+    }), borderColor:'transparent', borderWidth:0, order:3 });
+  charts.cruscotto = new Chart(ctx, {
+    type: 'bar',
+    data: { labels: MONTHS, datasets },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{position:'top'}, tooltip:{ callbacks:{ label: ctx => ctx.dataset.label+': €'+Math.round(ctx.raw||0).toLocaleString('it') } } },
+      scales:{ y:{ ticks:{ callback: v => '€'+Math.round(v/1000)+'k' } } }
+    }
+  });
+}
+// ═══════════════════════════════════════════════════════════
+// CASHFLOW
+// ═══════════════════════════════════════════════════════════
+function buildCashflowFromRegistro() {
+  const reg = D().registro;
+  const cfg = SECTORS[state.currentSector];
+  const cfIn = {}; const cfOut = {};
+  cfg.cashflowIn.forEach(c => { cfIn[c] = new Array(12).fill(0); });
+  cfg.cashflowOut.forEach(c => { cfOut[c] = new Array(12).fill(0); });
+  reg.entrate.forEach(e => {
+    const m = getMonth(e.data);
+    const cat = e.tipologiaCF || cfg.cashflowIn[0];
+    if (m >= 0) {
+      if (!cfIn[cat]) cfIn[cat] = new Array(12).fill(0);
+      cfIn[cat][m] += parseFloat(e.importoLordo) || 0;
+    }
+  });
+  reg.uscite.forEach(e => {
+    const m = getMonth(e.data);
+    const cat = e.tipologiaCF || cfg.cashflowOut[0];
+    if (m >= 0) {
+      if (!cfOut[cat]) cfOut[cat] = new Array(12).fill(0);
+      cfOut[cat][m] += Math.abs(parseFloat(e.importoLordo) || 0);
+    }
+  });
+  return { cfIn, cfOut };
+}
+function renderCashflow() {
+  const t = fpTotals();
+  const {cfIn, cfOut} = buildCashflowFromRegistro();
+  const totIn = new Array(12).fill(0);
+  const totOut = new Array(12).fill(0);
+  Object.values(cfIn).forEach(arr => arr.forEach((v,i) => totIn[i] += v));
+  Object.values(cfOut).forEach(arr => arr.forEach((v,i) => totOut[i] += v));
+  const saldoMens = totIn.map((v,i) => v - totOut[i]);
+  let cum = 0;
+  const saldoCum = saldoMens.map(v => { cum += v; return cum; });
+  function makeRows(data, cls) {
+    return Object.entries(data).map(([cat, arr]) => {
+      const tot = sumArr(arr);
+      const cells = arr.map(v => `<td>${fc(v)}</td>`).join('');
+      return `<tr class="${cls}"><td>${cat}</td><td>${fc(tot)}</td><td></td>${cells}</tr>`;
+    }).join('');
+  }
+  function sectionH(label) { return `<tr class="row-section-header"><td colspan="15">${label}</td></tr>`; }
+  function totRow(label, arr, cls) {
+    const tot = sumArr(arr);
+    return `<tr class="row-total ${cls||''}"><td><b>${label}</b></td><td><b>${fc(tot)}</b></td><td></td>${arr.map(v=>`<td><b>${fc(v)}</b></td>`).join('')}</tr>`;
+  }
+  return `
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">💰 Cashflow ${state.currentYear} — alimentato dal Registro Movimenti</div>
+    <small style="color:var(--muted)">I dati provengono automaticamente dal Registro Movimenti. Inserisci le voci lì.</small>
+  </div>
+  <div class="card-body" style="padding:8px">
+  <div class="table-wrap">
+  <table class="data-table">
+    <thead><tr>
+      <th style="min-width:200px">Categoria</th><th>Totale</th><th>%</th>
+      ${MONTHS.map(m=>`<th>${m}</th>`).join('')}
+    </tr></thead>
+    <tbody>
+      ${sectionH('📥 ENTRATE')}
+      ${makeRows(cfIn,'row-income')}
+      ${totRow('TOT. ENTRATE', totIn)}
+      ${sectionH('📤 USCITE')}
+      ${makeRows(cfOut,'row-fcost')}
+      ${totRow('TOT. USCITE', totOut)}
+      ${sectionH('RISULTATO')}
+      <tr class="row-margin"><td><b>💹 SALDO MENSILE</b></td><td><b>${fc(sumArr(saldoMens))}</b></td><td></td>${saldoMens.map(v=>`<td class="${colorVal(v)}"><b>${fc(v)}</b></td>`).join('')}</tr>
+      <tr class="row-margin"><td><b>📈 SALDO CUMULATO</b></td><td><b>${fc(saldoCum[11])}</b></td><td></td>${saldoCum.map(v=>`<td class="${colorVal(v)}"><b>${fc(v)}</b></td>`).join('')}</tr>
+    </tbody>
+  </table></div></div>
+</div>
+${t.sumI > 0 ? `
+<div class="card" style="margin-top:16px">
+  <div class="card-header"><div class="card-title">📋 Confronto Piano FP (budget) vs Consuntivo (registro)</div></div>
+  <div class="card-body" style="padding:8px">
+  <div class="table-wrap">
+  <table class="data-table">
+    <thead><tr>
+      <th style="min-width:180px">Voce</th>
+      ${MONTHS.map(m=>`<th>${m}</th>`).join('')}
+      <th>Totale</th>
+    </tr></thead>
+    <tbody>
+      <tr class="row-section-header"><td colspan="14">📋 PIANO FP — Budget Incassato</td></tr>
+      ${t.totIncome.every(v=>v===0) ? '<tr><td colspan="14" style="text-align:center;color:var(--muted);padding:8px">Nessun dato nel Piano FP</td></tr>' :
+        '<tr class="row-income"><td>Incassato da Piano FP</td>' + t.totIncome.map(v=>`<td>${fc(v)}</td>`).join('') + `<td><b>${fc(t.sumI)}</b></td></tr>`}
+      <tr class="row-section-header"><td colspan="14">✅ CONSUNTIVO — Entrate da Registro</td></tr>
+      <tr class="row-income"><td>Entrate reali da Registro</td>${totIn.map(v=>`<td>${fc(v)}</td>`).join('')}<td><b>${fc(sumArr(totIn))}</b></td></tr>
+      <tr class="row-section-header"><td colspan="14">📊 SCOSTAMENTO (Consuntivo − Budget)</td></tr>
+      <tr>${['Δ Incassato', ...totIn.map((v,i)=>v-t.totIncome[i]), sumArr(totIn)-t.sumI].map((v,i)=>
+        i===0 ? `<td><b>${v}</b></td>` : `<td class="${colorVal(v)}"><b>${v>0?'+':''}${fc(v)}</b></td>`
+      ).join('')}</tr>
+    </tbody>
+  </table></div></div>
+</div>` : ''}
+<div style="background:#fffbe6;border:1px solid #f39c12;border-radius:6px;padding:10px 14px;font-size:12px;color:#856404;margin-top:16px">
+  💡 <b>Come alimentare il cashflow:</b> vai su <b>Registro Movimenti</b>, inserisci le entrate e uscite del conto corrente e assegna a ciascuna la <i>Tipologia Cashflow</i>. Il cashflow si aggiorna automaticamente.
+</div>`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// REGISTRO MOVIMENTI
+// ═══════════════════════════════════════════════════════════
+function renderRegistro() {
+  const d = D().registro;
+  const cfg = SECTORS[state.currentSector];
+  // Build category lists from ACTUAL FP rows (imported data takes priority over sector defaults)
+  const fpIncNames = D().fp.income.map(r => r.name);
+  const fpVcNames  = D().fp.vcosts.map(r => r.name);
+  const fpFcNames  = D().fp.fcosts.map(r => r.name);
+  const allIncomeCat = [...new Set(['Incassato da clienti', ...fpIncNames, ...cfg.income, ...cfg.cashflowIn])];
+  const allCostCat   = [...new Set([...fpVcNames, ...fpFcNames, ...cfg.vcosts, ...cfg.fcosts, ...cfg.cashflowOut])];
+  function makeEntRow(e, i) {
+    const imponibile = (parseFloat(e.importoLordo)||0) / (1 + (parseFloat(e.iva)||0)/100);
+    const ivaAmt = (parseFloat(e.importoLordo)||0) - imponibile;
+    return `<tr>
+      <td><input type="date" value="${e.data||''}" onchange="updateReg('entrate',${i},'data',this.value)" style="width:120px"></td>
+      <td><input type="number" value="${e.importoLordo||''}" placeholder="0" onchange="updateReg('entrate',${i},'importoLordo',this.value)" style="width:90px"></td>
+      <td><input type="text" value="${e.descrizione||''}" placeholder="Descrizione..." onchange="updateReg('entrate',${i},'descrizione',this.value)" style="min-width:140px"></td>
+      <td><select onchange="updateReg('entrate',${i},'tipologiaCF',this.value)" style="min-width:140px">
+        ${cfg.cashflowIn.map(c=>`<option ${e.tipologiaCF===c?'selected':''}>${c}</option>`).join('')}
+      </select></td>
+      <td><select onchange="updateReg('entrate',${i},'tipologiaFP',this.value)" style="min-width:140px">
+        ${allIncomeCat.map(c=>`<option ${e.tipologiaFP===c?'selected':''}>${c}</option>`).join('')}
+      </select></td>
+      <td><select onchange="updateReg('entrate',${i},'iva',this.value)" style="width:65px">
+        ${IVA_RATES.map(r=>`<option value="${r}" ${parseFloat(e.iva)===r?'selected':''}>${r}%</option>`).join('')}
+      </select></td>
+      <td style="color:var(--muted)">${MONTHS[new Date(e.data).getMonth()]||''}</td>
+      <td style="color:var(--muted)">${fc(imponibile)}</td>
+      <td style="color:var(--muted)">${fc(ivaAmt)}</td>
+      <td><button class="btn btn-danger btn-sm" onclick="deleteReg('entrate',${i})">✕</button></td>
+    </tr>`;
+  }
+  function makeUscRow(e, i) {
+    const importo = Math.abs(parseFloat(e.importoLordo)||0);
+    const imponibile = importo / (1 + (parseFloat(e.iva)||0)/100);
+    const ivaAmt = importo - imponibile;
+    return `<tr>
+      <td><input type="date" value="${e.data||''}" onchange="updateReg('uscite',${i},'data',this.value)" style="width:120px"></td>
+      <td><input type="number" value="${importo||''}" placeholder="0" onchange="updateReg('uscite',${i},'importoLordo',this.value)" style="width:90px"></td>
+      <td><input type="text" value="${e.descrizione||''}" placeholder="Descrizione..." onchange="updateReg('uscite',${i},'descrizione',this.value)" style="min-width:140px"></td>
+      <td><select onchange="updateReg('uscite',${i},'tipologiaCF',this.value)" style="min-width:140px">
+        ${cfg.cashflowOut.map(c=>`<option ${e.tipologiaCF===c?'selected':''}>${c}</option>`).join('')}
+      </select></td>
+      <td><select onchange="updateReg('uscite',${i},'tipologiaFP',this.value)" style="min-width:140px">
+        ${allCostCat.map(c=>`<option ${e.tipologiaFP===c?'selected':''}>${c}</option>`).join('')}
+      </select></td>
+      <td><select onchange="updateReg('uscite',${i},'iva',this.value)" style="width:65px">
+        ${IVA_RATES.map(r=>`<option value="${r}" ${parseFloat(e.iva)===r?'selected':''}>${r}%</option>`).join('')}
+      </select></td>
+      <td style="color:var(--muted)">${MONTHS[new Date(e.data).getMonth()]||''}</td>
+      <td style="color:var(--muted)">${fc(imponibile)}</td>
+      <td style="color:var(--muted)">${fc(ivaAmt)}</td>
+      <td><button class="btn btn-danger btn-sm" onclick="deleteReg('uscite',${i})">✕</button></td>
+    </tr>`;
+  }
+  const totEnt = sumArr(d.entrate.map(e=>parseFloat(e.importoLordo)||0));
+  const totUsc = sumArr(d.uscite.map(e=>parseFloat(e.importoLordo)||0));
+  const colHeaders = `<tr>
+    <th>Data</th><th>Importo Lordo €</th><th>Descrizione</th>
+    <th>Tipologia Cashflow</th><th>Tipologia FP</th><th>IVA %</th>
+    <th>Mese</th><th>Imponibile</th><th>IVA €</th><th></th>
+  </tr>`;
+  return `
+<div class="kpi-grid" style="grid-template-columns:1fr 1fr 1fr">
+  <div class="kpi-card" style="border-left-color:var(--green)">
+    <div class="kpi-label">📥 Totale Entrate (lordo)</div>
+    <div class="kpi-value">${fc(totEnt)}</div>
+    <div class="kpi-sub">${d.entrate.length} movimenti</div>
+  </div>
+  <div class="kpi-card" style="border-left-color:var(--red)">
+    <div class="kpi-label">📤 Totale Uscite (lordo)</div>
+    <div class="kpi-value">${fc(totUsc)}</div>
+    <div class="kpi-sub">${d.uscite.length} movimenti</div>
+  </div>
+  <div class="kpi-card" style="border-left-color:${totEnt-totUsc>=0?'var(--green)':'var(--red)'}">
+    <div class="kpi-label">💹 Saldo</div>
+    <div class="kpi-value ${colorVal(totEnt-totUsc)}">${fc(totEnt-totUsc)}</div>
+    <div class="kpi-sub">Entrate - Uscite</div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <div class="card-title" style="color:var(--green)">📥 REGISTRO ENTRATE</div>
+    <button class="btn btn-success btn-sm" onclick="addReg('entrate')">+ Aggiungi Entrata</button>
+  </div>
+  <div class="card-body" style="padding:8px">
+  <div class="table-wrap"><table class="data-table reg-table">
+    <thead>${colHeaders}</thead>
+    <tbody>${d.entrate.map((e,i) => makeEntRow(e,i)).join('')}
+    ${d.entrate.length===0?'<tr><td colspan="10" style="text-align:center;color:var(--muted);padding:20px">Nessuna entrata. Clicca &ldquo;Aggiungi Entrata&rdquo;.</td></tr>':''}
+    </tbody>
+  </table></div></div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <div class="card-title" style="color:var(--red)">📤 REGISTRO USCITE</div>
+    <button class="btn btn-danger btn-sm" onclick="addReg('uscite')">+ Aggiungi Uscita</button>
+  </div>
+  <div class="card-body" style="padding:8px">
+  <div class="table-wrap"><table class="data-table reg-table">
+    <thead>${colHeaders}</thead>
+    <tbody>${d.uscite.map((e,i) => makeUscRow(e,i)).join('')}
+    ${d.uscite.length===0?'<tr><td colspan="10" style="text-align:center;color:var(--muted);padding:20px">Nessuna uscita. Clicca &ldquo;Aggiungi Uscita&rdquo;.</td></tr>':''}
+    </tbody>
+  </table></div></div>
+</div>`;
+}
+
+function addReg(type) {
+  D().registro[type].push({data:'', importoLordo:0, descrizione:'', tipologiaCF:'', tipologiaFP:'', iva:22});
+  saveData(); renderModule();
+}
+function deleteReg(type, idx) {
+  D().registro[type].splice(idx, 1);
+  saveData(); renderModule();
+}
+function updateReg(type, idx, field, value) {
+  D().registro[type][idx][field] = value;
+  saveData();
+}
+// ═══════════════════════════════════════════════════════════
+// MARGINALITÀ
+// ═══════════════════════════════════════════════════════════
+function renderMarginalita() {
+  const d = D().marginalita;
+  const t = fpTotals();
+  const incCF = t.sumI > 0 ? t.sumF/t.sumI : 0;
+  function calcMarg(p) {
+    const price = parseFloat(p.price) || 0;
+    const vc = sumArr((p.vcosts||[]).map(c => parseFloat(c.value)||0));
+    const labor = sumArr((p.labor||[]).map(l => (parseFloat(l.hours)||0) * (parseFloat(l.rate)||0)));
+    const primo = price - vc - labor;
+    const cfAmount = price * incCF;
+    const secondo = primo - cfAmount;
+    return { price, vc, labor, primo, cfAmount, secondo, incCF };
+  }
+  const productCards = d.products.map((p, pi) => {
+    const mg = calcMarg(p);
+    const primoClass = mg.primo >= 0 ? 'badge-green' : 'badge-red';
+    const secondoClass = mg.secondo >= 0 ? 'badge-green' : 'badge-red';
+    const vcRows = (p.vcosts||[]).map((c,ci) => `
+      <tr>
+        <td><input type="text" value="${c.name||''}" placeholder="Es: Costo materiali" onchange="updateMargVC(${pi},${ci},'name',this.value)" style="width:160px"></td>
+        <td><input type="number" value="${c.perc||''}" placeholder="%" onchange="updateMargVC(${pi},${ci},'perc',this.value);recalcMargVC(${pi},${ci})" style="width:60px" step="0.1"></td>
+        <td><input type="number" value="${c.value||''}" placeholder="€" onchange="updateMargVC(${pi},${ci},'value',this.value)" style="width:80px" step="0.01"></td>
+        <td><button class="btn btn-danger btn-sm" onclick="removeMargVC(${pi},${ci})">✕</button></td>
+      </tr>`).join('');
+    const laborRows = (p.labor||[]).map((l,li) => `
+      <tr>
+        <td><input type="text" value="${l.person||''}" placeholder="Persona/Ruolo" onchange="updateMargLabor(${pi},${li},'person',this.value)" style="width:130px"></td>
+        <td><input type="number" value="${l.hours||''}" placeholder="ore" onchange="updateMargLabor(${pi},${li},'hours',this.value)" style="width:60px" step="0.5"></td>
+        <td><input type="number" value="${l.rate||''}" placeholder="€/ora" onchange="updateMargLabor(${pi},${li},'rate',this.value)" style="width:70px" step="0.5"></td>
+        <td style="font-weight:600">${fc((parseFloat(l.hours)||0)*(parseFloat(l.rate)||0))}</td>
+        <td><button class="btn btn-danger btn-sm" onclick="removeMargLabor(${pi},${li})">✕</button></td>
+      </tr>`).join('');
+    return `
+<div class="card margine-card ${mg.secondo < 0 ? 'margine-neg' : ''}">
+  <div class="card-header">
+    <div style="flex:1">
+      <input type="text" value="${p.name||''}" placeholder="Nome prodotto / servizio..." onchange="updateMarg(${pi},'name',this.value)"
+        style="font-size:15px;font-weight:700;color:var(--primary);border:none;border-bottom:2px solid var(--border);background:transparent;width:300px;padding:2px 4px">
+    </div>
+    <div class="flex">
+      <span class="badge ${primoClass}">1° Margine: ${fc(mg.primo)} (${mg.price>0?(mg.primo/mg.price*100).toFixed(1)+'%':'-'})</span>
+      <span class="badge ${secondoClass}">2° Margine: ${fc(mg.secondo)} (${mg.price>0?(mg.secondo/mg.price*100).toFixed(1)+'%':'-'})</span>
+      <button class="btn btn-danger btn-sm" onclick="removeMargProduct(${pi})">✕ Rimuovi</button>
+    </div>
+  </div>
+  <div class="card-body">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+      <div>
+        <div class="form-group">
+          <label>💰 Prezzo di Vendita (netto IVA)</label>
+          <input type="number" value="${p.price||''}" placeholder="0" onchange="updateMarg(${pi},'price',this.value)" step="0.01">
+        </div>
+        <div class="mb-2" style="font-weight:600;color:var(--orange)">COSTI VARIABILI</div>
+        <table style="width:100%;font-size:12px;margin-bottom:8px">
+          <thead><tr><th style="text-align:left;padding:3px;color:var(--muted)">Voce</th><th style="color:var(--muted)">%</th><th style="color:var(--muted)">€</th><th></th></tr></thead>
+          <tbody>${vcRows}</tbody>
+        </table>
+        <button class="btn btn-outline btn-sm mb-2" onclick="addMargVC(${pi})">+ Aggiungi costo variabile</button>
+        <div style="background:var(--light);padding:8px;border-radius:4px;margin-top:4px">
+          <div style="font-size:11px;color:var(--muted)">Totale costi variabili</div>
+          <div style="font-size:16px;font-weight:700;color:var(--orange)">${fc(mg.vc)}</div>
+        </div>
+      </div>
+      <div>
+        <div class="mb-2" style="font-weight:600;color:var(--primary)">COSTO MANODOPERA (personale produttivo)</div>
+        <table style="width:100%;font-size:12px;margin-bottom:8px">
+          <thead><tr><th style="text-align:left;padding:3px;color:var(--muted)">Persona</th><th style="color:var(--muted)">Ore</th><th style="color:var(--muted)">€/ora</th><th style="color:var(--muted)">Totale</th><th></th></tr></thead>
+          <tbody>${laborRows}</tbody>
+        </table>
+        <button class="btn btn-outline btn-sm mb-2" onclick="addMargLabor(${pi})">+ Aggiungi persona</button>
+        <div style="background:var(--light);padding:8px;border-radius:4px;margin-bottom:8px">
+          <div style="font-size:11px;color:var(--muted)">Totale manodopera produttiva</div>
+          <div style="font-size:16px;font-weight:700">${fc(mg.labor)}</div>
+        </div>
+        <div style="background:#fff3cd;padding:8px;border-radius:4px;margin-bottom:8px">
+          <div style="font-size:11px;color:var(--muted)">Incidenza costi fissi struttura (dal Piano FP: ${(incCF*100).toFixed(1)}%)</div>
+          <input type="number" value="${p.customCF!==undefined?(p.customCF*100).toFixed(1):(incCF*100).toFixed(1)}"
+            onchange="updateMarg(${pi},'customCF',this.value/100)" step="0.1" style="width:80px"> %
+          <span style="color:var(--muted);font-size:11px"> = ${fc(mg.cfAmount)}</span>
+        </div>
+        <div style="background:${mg.secondo>=0?'#d5f5e3':'#fce8e6'};padding:12px;border-radius:6px;border-left:4px solid ${mg.secondo>=0?'var(--green)':'var(--red)'}">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div><div style="font-size:11px;color:var(--muted)">1° Margine (dopo CV e labor)</div><div style="font-size:18px;font-weight:700;color:${mg.primo>=0?'var(--green)':'var(--red)'}">${fc(mg.primo)}</div></div>
+            <div><div style="font-size:11px;color:var(--muted)">2° Margine (dopo costi fissi)</div><div style="font-size:18px;font-weight:700;color:${mg.secondo>=0?'var(--green)':'var(--red)'}">${fc(mg.secondo)}</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>`;
+  }).join('');
+  return `
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+  <div>
+    <h2 style="color:var(--primary)">📈 Calcolo Marginalità Prodotti/Servizi</h2>
+    <p style="color:var(--muted);font-size:12px">Incidenza costi fissi auto-calcolata dal Piano FP: <b>${(incCF*100).toFixed(1)}%</b> — puoi personalizzarla per ogni prodotto</p>
+  </div>
+  <button class="btn btn-primary" onclick="addMargProduct()">+ Aggiungi Prodotto/Servizio</button>
+</div>
+${productCards || `<div class="card"><div class="card-body" style="text-align:center;padding:40px;color:var(--muted)">
+  <div style="font-size:40px;margin-bottom:12px">📈</div>
+  <div>Nessun prodotto ancora. Clicca <b>"Aggiungi Prodotto/Servizio"</b> per iniziare.</div>
+</div></div>`}`;
+}
+
+function addMargProduct() {
+  D().marginalita.products.push({name:'Nuovo Prodotto/Servizio', price:0, vcosts:[], labor:[]});
+  saveData(); renderModule();
+}
+function removeMargProduct(pi) {
+  if (!confirm('Rimuovere?')) return;
+  D().marginalita.products.splice(pi, 1);
+  saveData(); renderModule();
+}
+function updateMarg(pi, field, value) {
+  D().marginalita.products[pi][field] = isNaN(value) ? value : (parseFloat(value)||0);
+  saveData(); renderModule();
+}
+function addMargVC(pi) {
+  if (!D().marginalita.products[pi].vcosts) D().marginalita.products[pi].vcosts = [];
+  D().marginalita.products[pi].vcosts.push({name:'',perc:0,value:0});
+  saveData(); renderModule();
+}
+function removeMargVC(pi, ci) {
+  D().marginalita.products[pi].vcosts.splice(ci,1);
+  saveData(); renderModule();
+}
+function updateMargVC(pi, ci, field, value) {
+  D().marginalita.products[pi].vcosts[ci][field] = isNaN(value)||field==='name' ? value : parseFloat(value)||0;
+  saveData();
+}
+function recalcMargVC(pi, ci) {
+  const p = D().marginalita.products[pi];
+  const c = p.vcosts[ci];
+  if (c.perc && p.price) { c.value = (parseFloat(c.perc)/100) * (parseFloat(p.price)||0); }
+  saveData(); renderModule();
+}
+function addMargLabor(pi) {
+  if (!D().marginalita.products[pi].labor) D().marginalita.products[pi].labor = [];
+  D().marginalita.products[pi].labor.push({person:'',hours:0,rate:0});
+  saveData(); renderModule();
+}
+function removeMargLabor(pi, li) {
+  D().marginalita.products[pi].labor.splice(li,1);
+  saveData(); renderModule();
+}
+function updateMargLabor(pi, li, field, value) {
+  D().marginalita.products[pi].labor[li][field] = isNaN(value)||field==='person' ? value : parseFloat(value)||0;
+  saveData();
+}
+// ═══════════════════════════════════════════════════════════
+// VELOCITÀ DEL DENARO
+// ═══════════════════════════════════════════════════════════
+function renderCCN(v) {
+  // Attivo Corrente
+  const crediti        = v.crediti        || 0;
+  const magazzino      = v.magazzino      || 0;
+  const liquidita      = v.liquidita      || 0;
+  const altriCrediti   = v.altriCrediti   || 0;
+  const attivoCorrente = crediti + magazzino + liquidita + altriCrediti;
+  // Passivo Corrente
+  const debiti           = v.debiti           || 0;
+  const debitiTributari  = v.debitiTributari  || 0;
+  const debitiDipendenti = v.debitiDipendenti || 0;
+  const fidiUtilizzati   = v.fidiUtilizzati   || 0;
+  const passivoCorrente  = debiti + debitiTributari + debitiDipendenti + fidiUtilizzati;
+  // Indicatori
+  const ccn         = attivoCorrente - passivoCorrente;
+  const ccnOp       = crediti + magazzino - debiti; // CCN operativo = C+M-F in €
+  const curRatio    = passivoCorrente > 0 ? (attivoCorrente / passivoCorrente) : null;
+  const ccnPctFatt  = v.fatturato12m > 0 ? (ccn / v.fatturato12m * 100).toFixed(1) : null;
+  const ccnGiorni   = v.fatturato12m > 0 ? Math.round(ccn / v.fatturato12m * 365) : null;
+
+  const crColor = curRatio === null ? 'var(--muted)' : curRatio >= 1.5 ? 'var(--green)' : curRatio >= 1 ? 'var(--orange)' : 'var(--red)';
+  const crBg    = curRatio === null ? 'var(--light)' : curRatio >= 1.5 ? '#d5f5e3' : curRatio >= 1 ? '#fff8e1' : '#fce8e6';
+  const crNote  = curRatio === null ? 'inserisci dati' : curRatio >= 1.5 ? '✅ ottima solvibilità' : curRatio >= 1 ? '⚠️ da monitorare' : '🚨 rischio liquidità';
+  const ccnColor = ccn >= 0 ? 'var(--green)' : 'var(--red)';
+  const ccnBg    = ccn >= 0 ? '#d5f5e3' : '#fce8e6';
+
+  const rowStyle = 'padding:6px 10px;border-bottom:1px solid var(--border)';
+  const totStyle = 'padding:7px 10px;font-weight:700';
+
+  return `
+<div class="card" style="margin-top:4px">
+  <div class="card-header" style="background:linear-gradient(135deg,#1a3a5c,#2d6da4)">
+    <div class="card-title" style="color:#fff">💼 Capitale Circolante Netto (CCN) = Attivo Corrente − Passivo Corrente</div>
+    <div style="font-size:11px;color:rgba(255,255,255,.7)">Misura la capacità dell'azienda di far fronte agli impegni a breve termine con le risorse a breve disponibili</div>
+  </div>
+  <div class="card-body">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+
+      <!-- Colonna SX: input aggiuntivi -->
+      <div>
+        <div style="font-weight:700;color:var(--green);font-size:12px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">➕ Dati Attivo Corrente aggiuntivi</div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:10px">Crediti clienti e magazzino si leggono già dalla sezione Velocità sopra.</div>
+        <div class="form-group">
+          <label>💵 Disponibilità liquide — cassa + c/c bancari (€)</label>
+          <input type="number" value="${liquidita||''}" placeholder="0" onchange="updateVel('liquidita',this.value)" step="100">
+        </div>
+        <div class="form-group">
+          <label>📋 Altri crediti a breve (IVA a credito, acconti versati, ecc.) (€)</label>
+          <input type="number" value="${altriCrediti||''}" placeholder="0" onchange="updateVel('altriCrediti',this.value)" step="100">
+        </div>
+
+        <div style="font-weight:700;color:var(--red);font-size:12px;text-transform:uppercase;letter-spacing:.5px;margin:16px 0 10px">➖ Dati Passivo Corrente aggiuntivi</div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:10px">Debiti fornitori si legge già dalla sezione Velocità sopra.</div>
+        <div class="form-group">
+          <label>🧾 Debiti tributari — IVA, F24, imposte da versare (€)</label>
+          <input type="number" value="${debitiTributari||''}" placeholder="0" onchange="updateVel('debitiTributari',this.value)" step="100">
+        </div>
+        <div class="form-group">
+          <label>👷 Debiti verso dipendenti — stipendi, TFR da liquidare (€)</label>
+          <input type="number" value="${debitiDipendenti||''}" placeholder="0" onchange="updateVel('debitiDipendenti',this.value)" step="100">
+        </div>
+        <div class="form-group">
+          <label>🏦 Fidi bancari utilizzati / debiti finanziari a breve (€)</label>
+          <input type="number" value="${fidiUtilizzati||''}" placeholder="0" onchange="updateVel('fidiUtilizzati',this.value)" step="100">
+        </div>
+      </div>
+
+      <!-- Colonna DX: tabella CCN + indicatori -->
+      <div>
+        <table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:16px">
+          <tbody>
+            <tr><td colspan="2" style="padding:7px 10px;background:var(--green);color:#fff;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.5px">ATTIVO CORRENTE</td></tr>
+            <tr><td style="${rowStyle}">+ Crediti verso clienti</td><td style="${rowStyle};text-align:right">${fc(crediti)}</td></tr>
+            <tr><td style="${rowStyle}">+ Rimanenze / Magazzino</td><td style="${rowStyle};text-align:right">${fc(magazzino)}</td></tr>
+            <tr><td style="${rowStyle}">+ Disponibilità liquide (cassa + c/c)</td><td style="${rowStyle};text-align:right">${fc(liquidita)}</td></tr>
+            <tr><td style="${rowStyle}">+ Altri crediti a breve</td><td style="${rowStyle};text-align:right">${fc(altriCrediti)}</td></tr>
+            <tr style="background:#eaf1f8"><td style="${totStyle}">= Totale Attivo Corrente</td><td style="${totStyle};text-align:right;color:var(--green)">${fc(attivoCorrente)}</td></tr>
+
+            <tr><td colspan="2" style="padding:7px 10px;background:var(--red);color:#fff;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.5px;padding-top:12px">PASSIVO CORRENTE</td></tr>
+            <tr><td style="${rowStyle}">− Debiti verso fornitori</td><td style="${rowStyle};text-align:right">${fc(debiti)}</td></tr>
+            <tr><td style="${rowStyle}">− Debiti tributari (IVA, F24)</td><td style="${rowStyle};text-align:right">${fc(debitiTributari)}</td></tr>
+            <tr><td style="${rowStyle}">− Debiti verso dipendenti (stipendi, TFR)</td><td style="${rowStyle};text-align:right">${fc(debitiDipendenti)}</td></tr>
+            <tr><td style="${rowStyle}">− Fidi bancari utilizzati</td><td style="${rowStyle};text-align:right">${fc(fidiUtilizzati)}</td></tr>
+            <tr style="background:#fce8e6"><td style="${totStyle}">= Totale Passivo Corrente</td><td style="${totStyle};text-align:right;color:var(--red)">${fc(passivoCorrente)}</td></tr>
+
+            <tr style="background:${ccnBg}"><td colspan="2" style="padding:2px"></td></tr>
+            <tr style="background:${ccnBg}">
+              <td style="padding:12px 10px;font-weight:700;font-size:15px">CCN = Attivo − Passivo Corrente</td>
+              <td style="padding:12px 10px;font-weight:700;font-size:22px;text-align:right;color:${ccnColor}">${fc(ccn)}</td>
+            </tr>
+            <tr style="background:${ccnBg}">
+              <td colspan="2" style="padding:0 10px 10px;font-size:11px;color:var(--muted)">
+                ${ccn >= 0 ? '✅ L\'azienda copre i debiti correnti con le risorse a breve — situazione solida.' : '🚨 Il passivo corrente supera l\'attivo corrente — attenzione alla liquidità a breve!'}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Indicatori -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div style="padding:12px;background:${crBg};border-radius:8px;text-align:center">
+            <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Current Ratio</div>
+            <div style="font-size:28px;font-weight:700;color:${crColor}">${curRatio !== null ? curRatio.toFixed(2) : '—'}</div>
+            <div style="font-size:10px;color:var(--muted)">${crNote}</div>
+            <div style="font-size:10px;color:var(--muted);margin-top:2px">ideale &gt; 1,5</div>
+          </div>
+          <div style="padding:12px;background:${ccnBg};border-radius:8px;text-align:center">
+            <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">CCN % Fatturato</div>
+            <div style="font-size:28px;font-weight:700;color:${ccnColor}">${ccnPctFatt !== null ? ccnPctFatt+'%' : '—'}</div>
+            <div style="font-size:10px;color:var(--muted)">CCN / Fatturato × 100</div>
+          </div>
+          <div style="padding:12px;background:${ccnOp>=0?'#d5f5e3':'#fce8e6'};border-radius:8px;text-align:center">
+            <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">CCN Operativo (€)</div>
+            <div style="font-size:20px;font-weight:700;color:${ccnOp>=0?'var(--green)':'var(--red)'}">${fc(ccnOp)}</div>
+            <div style="font-size:10px;color:var(--muted)">Crediti + Magazz. − Deb.Forn.</div>
+          </div>
+          <div style="padding:12px;background:${ccnBg};border-radius:8px;text-align:center">
+            <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">CCN in giorni</div>
+            <div style="font-size:20px;font-weight:700;color:${ccnColor}">${ccnGiorni !== null ? ccnGiorni+' gg' : '—'}</div>
+            <div style="font-size:10px;color:var(--muted)">CCN / Fatturato × 365</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>`;
+}
+
+function renderVelocita() {
+  const v = D().velocita;
+  const C = v.fatturato12m > 0 ? (v.crediti / v.fatturato12m * 365).toFixed(0) : 0;
+  const F = v.acquisti12m > 0 ? (v.debiti / v.acquisti12m * 365).toFixed(0) : 0;
+  const M = v.acquisti12m > 0 ? (v.magazzino / v.acquisti12m * 365).toFixed(0) : 0;
+  const vel = parseInt(C) + parseInt(M) - parseInt(F);
+  let velClass = 'veloce', velLabel = '⚡ DENARO VELOCE', velDesc = 'Incassi prima di quando spendi. Ottima situazione finanziaria.';
+  if (vel > 30) { velClass = 'lento'; velLabel = '🐌 DENARO LENTO'; velDesc = 'Spendi prima di incassare. Attenzione alla liquidità!'; }
+  if (vel < -15) { velClass = 'supersonico'; velLabel = '🚀 DENARO SUPERSONICO'; velDesc = 'Sei finanziato da clienti e fornitori. Gestisci con attenzione i soldi in cassa.'; }
+  if (vel === 0) { velClass = 'veloce'; velLabel = '⚖️ EQUILIBRIO'; velDesc = 'In pareggio tra incassi e uscite.'; }
+  const t = fpTotals();
+  return `
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+<div>
+<div class="card">
+  <div class="card-header"><div class="card-title">⚡ Velocità del Denaro (C+M-F)</div></div>
+  <div class="card-body">
+    <p style="color:var(--muted);font-size:12px;margin-bottom:16px">Inserisci i dati degli ultimi 12 mesi. La formula misura in quanti giorni il denaro "gira" nell'azienda.</p>
+    <div class="form-group">
+      <label style="display:flex;align-items:center;justify-content:space-between">
+        📄 Fatturato ultimi 12 mesi (€)
+        ${t.sumI>0?`<span onclick="suggestVelFromFP()" style="font-size:10px;color:var(--accent);cursor:pointer;font-weight:600;text-decoration:underline" title="Usa il totale incassato dal Piano FP">📋 Usa da Piano FP (${fc(t.sumI)})</span>`:''}
+      </label>
+      <input type="number" value="${v.fatturato12m||''}" placeholder="0" onchange="updateVel('fatturato12m',this.value)" step="100">
+      <small style="color:var(--muted)">Non dell'anno concluso, ma degli ultimi 12 mesi da oggi</small>
+    </div>
+    <div class="form-group">
+      <label>🛒 Acquisti merci ultimi 12 mesi (€)</label>
+      <input type="number" value="${v.acquisti12m||''}" placeholder="0" onchange="updateVel('acquisti12m',this.value)" step="100">
+      <small style="color:var(--muted)">Solo per aziende con magazzino; per servizi puri metti 0</small>
+    </div>
+    <div class="form-group">
+      <label>📦 Valore magazzino attuale (€)</label>
+      <input type="number" value="${v.magazzino||''}" placeholder="0" onchange="updateVel('magazzino',this.value)" step="100">
+      <small style="color:var(--muted)">Al costo di acquisto, non al prezzo di vendita</small>
+    </div>
+    <div class="form-group">
+      <label>👥 Totale crediti clienti (scaduti + a scadere) (€)</label>
+      <input type="number" value="${v.crediti||''}" placeholder="0" onchange="updateVel('crediti',this.value)" step="100">
+      <small style="color:var(--muted)">Fatture emesse non ancora incassate</small>
+    </div>
+    <div class="form-group">
+      <label>🏭 Totale debiti fornitori (scaduti + a scadere) (€)</label>
+      <input type="number" value="${v.debiti||''}" placeholder="0" onchange="updateVel('debiti',this.value)" step="100">
+      <small style="color:var(--muted)">Fatture fornitori non ancora pagate</small>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header"><div class="card-title">💡 Come migliorare la velocità</div></div>
+  <div class="card-body">
+    <div style="margin-bottom:12px">
+      <div style="font-weight:700;color:var(--green);margin-bottom:4px">LEVA 1 — Incassa prima dai clienti</div>
+      <ul style="font-size:12px;color:var(--text);padding-left:16px">
+        <li>Riduci i termini di pagamento (da 60→30 giorni)</li>
+        <li>Chiedi acconti prima di iniziare i lavori</li>
+        <li>Monitora e recupera i crediti scaduti</li>
+      </ul>
+    </div>
+    <div style="margin-bottom:12px">
+      <div style="font-weight:700;color:var(--accent);margin-bottom:4px">LEVA 2 — Paga più lentamente i fornitori</div>
+      <ul style="font-size:12px;color:var(--text);padding-left:16px">
+        <li>Negozia termini 60+ giorni coi fornitori principali</li>
+        <li>Concentra gli acquisti su un fornitore in cambio di condizioni migliori</li>
+        <li>Non pagare "a babbo morto" — rovina i rapporti</li>
+      </ul>
+    </div>
+    <div>
+      <div style="font-weight:700;color:var(--orange);margin-bottom:4px">LEVA 3 — Riduci i tempi di magazzino</div>
+      <ul style="font-size:12px;color:var(--text);padding-left:16px">
+        <li>Evita stock eccessivi; ordina su bisogno reale</li>
+        <li>Tieni il magazzino in ordine e digitalizzato</li>
+        <li>Riduci i prodotti a bassa rotazione</li>
+      </ul>
+    </div>
+  </div>
+</div>
+</div>
+
+<div>
+<div class="velocity-box ${velClass}">
+  <div style="font-size:13px;font-weight:600;margin-bottom:4px">${velLabel}</div>
+  <div class="velocity-value">${vel >= 0 ? '+' : ''}${vel} giorni</div>
+  <div style="font-size:12px;margin-top:8px;opacity:.8">${velDesc}</div>
+</div>
+
+<div class="card">
+  <div class="card-header"><div class="card-title">📐 Dettaglio Calcolo</div></div>
+  <div class="card-body">
+    <table style="width:100%;font-size:13px">
+      <tr style="margin-bottom:8px">
+        <td style="padding:10px;background:var(--light);border-radius:6px;margin-bottom:8px">
+          <div style="font-size:11px;color:var(--muted);text-transform:uppercase">C — Tempo incasso clienti</div>
+          <div style="font-size:28px;font-weight:700;color:var(--primary)">${C} giorni</div>
+          <div style="font-size:11px;color:var(--muted)">(Crediti ${fc(v.crediti)} / Fatturato ${fc(v.fatturato12m)}) × 365</div>
+        </td>
+      </tr>
+      <tr><td style="padding:6px 10px;font-size:18px;text-align:center;color:var(--muted)">+</td></tr>
+      <tr>
+        <td style="padding:10px;background:var(--light);border-radius:6px">
+          <div style="font-size:11px;color:var(--muted);text-transform:uppercase">M — Giorni magazzino</div>
+          <div style="font-size:28px;font-weight:700;color:var(--primary)">${M} giorni</div>
+          <div style="font-size:11px;color:var(--muted)">(Magazzino ${fc(v.magazzino)} / Acquisti ${fc(v.acquisti12m)}) × 365</div>
+        </td>
+      </tr>
+      <tr><td style="padding:6px 10px;font-size:18px;text-align:center;color:var(--muted)">−</td></tr>
+      <tr>
+        <td style="padding:10px;background:var(--light);border-radius:6px">
+          <div style="font-size:11px;color:var(--muted);text-transform:uppercase">F — Tempo pagamento fornitori</div>
+          <div style="font-size:28px;font-weight:700;color:var(--primary)">${F} giorni</div>
+          <div style="font-size:11px;color:var(--muted)">(Debiti ${fc(v.debiti)} / Acquisti ${fc(v.acquisti12m)}) × 365</div>
+        </td>
+      </tr>
+      <tr><td style="padding:10px 10px 4px;border-top:2px solid var(--primary);margin-top:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="font-weight:700;font-size:14px">C + M − F =</span>
+          <span style="font-size:28px;font-weight:700;color:${vel<=0?'var(--green)':'var(--red)'}">${vel >= 0 ? '+' : ''}${vel} giorni</span>
+        </div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">
+          ${vel > 0 ? '⚠️ Spendi '+vel+' giorni PRIMA di incassare' : '✅ Incassi '+Math.abs(vel)+' giorni prima di spendere'}
+        </div>
+      </td></tr>
+    </table>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header"><div class="card-title">📊 Dati dal Piano Finanziario</div></div>
+  <div class="card-body">
+    <div style="font-size:12px;color:var(--muted);margin-bottom:8px">Suggerimenti automatici basati sul Piano FP</div>
+    <div class="flex flex-wrap">
+      <span class="badge badge-blue">Incassato annuo: ${fc(t.sumI)}</span>
+      <span class="badge badge-red">Costi fissi: ${fc(t.sumF+t.sumE)}</span>
+      <span class="badge badge-orange">Incidenza CF: ${t.sumI>0?((t.sumF+t.sumE)/t.sumI*100).toFixed(1)+'%':'-'}</span>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+${renderCCN(v)}
+`;
+}
+
+function updateVel(field, value) {
+  D().velocita[field] = parseFloat(value) || 0;
+  saveData(); renderModule();
+}
+function suggestVelFromFP() {
+  const t = fpTotals();
+  if (!t.sumI) { alert('⚠️ Piano FP vuoto.'); return; }
+  D().velocita.fatturato12m = Math.round(t.sumI);
+  saveData(); renderModule();
+}
+
+// ═══════════════════════════════════════════════════════════
+// PUNTO DI PAREGGIO
+// ═══════════════════════════════════════════════════════════
+function renderPareggio() {
+  const d = D().pareggio;
+  const t = fpTotals();
+  function calcBE(s) {
+    const cf = (parseFloat(s.costiFissi)||0) + (parseFloat(s.costiPersonale)||0) + (parseFloat(s.compensoAdmin)||0);
+    const pv = parseFloat(s.percVariabili) || 0;
+    const fatMens = pv < 100 ? cf / (1 - pv/100) : null;
+    const fatAnnuo = fatMens ? fatMens * 12 : null;
+    return { cf, fatMens, fatAnnuo };
+  }
+  const scenarios = d.scenarios.map((s, si) => {
+    const be = calcBE(s);
+    const actualInc = t.sumI/12;
+    const coverageClass = be.fatMens && actualInc >= be.fatMens ? 'badge-green' : 'badge-red';
+    return `
+<div class="card" style="flex:1;min-width:220px">
+  <div class="card-header" style="background:${si===0?'var(--primary)':si===1?'var(--accent)':'var(--green)'}">
+    <div class="card-title" style="color:#fff">${s.name}</div>
+  </div>
+  <div class="card-body">
+    <div class="form-group">
+      <label>Costi fissi struttura (€/mese)</label>
+      <input type="number" value="${s.costiFissi||''}" placeholder="0" onchange="updatePareggio(${si},'costiFissi',this.value)" step="100">
+    </div>
+    <div class="form-group">
+      <label>Costi personale (€/mese)</label>
+      <input type="number" value="${s.costiPersonale||''}" placeholder="0" onchange="updatePareggio(${si},'costiPersonale',this.value)" step="100">
+    </div>
+    <div class="form-group">
+      <label>Compenso amministratore (€/mese)</label>
+      <input type="number" value="${s.compensoAdmin||''}" placeholder="0" onchange="updatePareggio(${si},'compensoAdmin',this.value)" step="100">
+    </div>
+    <div class="form-group">
+      <label>% Costi variabili su incassato</label>
+      <input type="number" value="${s.percVariabili||''}" placeholder="0" onchange="updatePareggio(${si},'percVariabili',this.value)" step="0.5"> %
+      ${t.sumI>0?`<div style="font-size:10px;color:var(--muted)">Piano FP: ${(t.sumV/t.sumI*100).toFixed(1)}%</div>`:''}
+    </div>
+    <div style="border-top:1px solid var(--border);padding-top:12px;margin-top:8px">
+      <div style="font-size:11px;color:var(--muted)">Costi fissi totali mensili</div>
+      <div style="font-size:16px;font-weight:700;color:var(--red)">${fc(be.cf)}/mese</div>
+      <div style="margin-top:8px;font-size:11px;color:var(--muted)">⚖️ PUNTO DI PAREGGIO</div>
+      <div style="font-size:22px;font-weight:700;color:var(--primary)">${be.fatMens ? fc(be.fatMens)+'/mese' : 'N/D'}</div>
+      <div style="font-size:12px;color:var(--muted)">${be.fatAnnuo ? fc(be.fatAnnuo)+' annui' : ''}</div>
+      ${actualInc > 0 && be.fatMens ? `<div class="mt-2"><span class="badge ${coverageClass}">Incassato piano: ${fc(actualInc)}/mese — ${actualInc >= be.fatMens ? '✅ SOPRA' : '⚠️ SOTTO'} il pareggio</span></div>` : ''}
+    </div>
+  </div>
+</div>`;
+  }).join('');
+  return `
+<div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:4px">
+  <h2 style="color:var(--primary);margin:0">⚖️ Calcolo Punto di Pareggio</h2>
+  <button class="btn btn-outline btn-sm" onclick="fillPareggioFromFP()" title="Compila lo scenario Attuale con costi fissi, personale e % variabili dal Piano FP">📋 Compila &quot;Attuale&quot; da Piano FP</button>
+</div>
+<p style="color:var(--muted);font-size:12px;margin-bottom:16px">Quante entrate mensili servono per coprire tutti i costi fissi?<br>
+Formula: Fatturato pareggio = Costi Fissi Totali / (1 − % Costi Variabili)</p>
+<div style="display:flex;gap:16px;flex-wrap:wrap">${scenarios}</div>
+<div class="card mt-3">
+  <div class="card-header"><div class="card-title">📊 Grafico confronto scenari</div></div>
+  <div class="card-body"><div class="chart-container"><canvas id="pareggio-chart"></canvas></div></div>
+</div>
+<div style="background:var(--light);padding:12px;border-radius:6px;margin-top:8px;font-size:12px">
+  💡 <b>Come usarlo:</b> Compila lo scenario "Attuale" con i costi reali del tuo studio. Il "Target" è dove vuoi arrivare. L'"Ideale" è la situazione ottimale a medio termine. 
+  Confronta il punto di pareggio con il tuo incassato medio mensile per capire di quanto sei sopra o sotto.
+</div>`;
+}
+
+function updatePareggio(si, field, value) {
+  D().pareggio.scenarios[si][field] = parseFloat(value) || 0;
+  saveData(); renderModule();
+}
+function fillPareggioFromFP() {
+  const t = fpTotals();
+  if (!t.sumI && !t.sumF && !t.sumE) {
+    alert('⚠️ Piano FP vuoto. Inserisci prima i dati nel Piano Finanziario.'); return;
+  }
+  const s = D().pareggio.scenarios[0]; // Scenario "Attuale"
+  s.costiFissi = Math.round(t.sumF / 12);
+  s.costiPersonale = Math.round(t.sumE / 12);
+  s.percVariabili = t.sumI > 0 ? parseFloat((t.sumV / t.sumI * 100).toFixed(1)) : 0;
+  saveData(); renderModule();
+  alert('✅ Scenario "Attuale" compilato con i dati del Piano FP!\n- Costi fissi mensili: €' + Math.round(t.sumF/12).toLocaleString('it') + '\n- Personale mensile: €' + Math.round(t.sumE/12).toLocaleString('it') + '\n- % costi variabili: ' + s.percVariabili + '%\n\nVerifica il compenso amministratore e aggiustalo manualmente.');
+}
+function initPareggioChart() {
+  const ctx = document.getElementById('pareggio-chart');
+  if (!ctx || typeof Chart === 'undefined') return;
+  const d = D().pareggio;
+  function calcBE(s) {
+    const cf = (s.costiFissi||0)+(s.costiPersonale||0)+(s.compensoAdmin||0);
+    const pv = s.percVariabili||0;
+    return pv < 100 ? cf/(1-pv/100) : 0;
+  }
+  const t = fpTotals();
+  charts.pareggio = new Chart(ctx, {
+    type:'bar',
+    data:{
+      labels: d.scenarios.map(s=>s.name),
+      datasets:[
+        {label:'Costi Fissi Mensili (€)', data:d.scenarios.map(s=>(s.costiFissi||0)+(s.costiPersonale||0)+(s.compensoAdmin||0)), backgroundColor:'rgba(231,76,60,.5)', borderColor:'var(--red)', borderWidth:2},
+        {label:'Punto di Pareggio (€/mese)', data:d.scenarios.map(calcBE), backgroundColor:'rgba(26,58,92,.5)', borderColor:'var(--primary)', borderWidth:2},
+        {label:'Incassato Piano FP (€/mese)', data:d.scenarios.map(()=>t.sumI/12), backgroundColor:'rgba(39,174,96,.4)', borderColor:'var(--green)', borderWidth:2, type:'line'}
+      ]
+    },
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top'}},scales:{y:{ticks:{callback:v=>'€'+Math.round(v/1000)+'k'}}}}
+  });
+}
+// ═══════════════════════════════════════════════════════════
+// STATO PATRIMONIALE
+// ═══════════════════════════════════════════════════════════
+function renderPatrimoniale() {
+  const d = D().patrimoniale;
+  const quarterLabels = [`Q1 (Mar ${state.currentYear})`,`Q2 (Giu ${state.currentYear})`,`Q3 (Set ${state.currentYear})`,`Q4 (Dic ${state.currentYear})`];
+  function calcQuarter(q) {
+    const immediata = (q.cassa||0) + (q.cc1||0) + (q.cc2||0) + (q.cc3||0) + (q.investimenti||0) - (q.anticipoFatture||0) - (q.fidi||0);
+    const aScadenza = -((q.mutuo1||0) + (q.mutuo2||0));
+    const posizFin = immediata + aScadenza;
+    const totalAtt = immediata + (q.creditiClienti||0) + (q.rimanenze||0) + (q.altriCrediti||0);
+    const totalPass = Math.abs(aScadenza) + (q.debitiFornitore||0) + (q.altriDebiti||0);
+    const patrimonioNetto = totalAtt - totalPass;
+    return { immediata, aScadenza, posizFin, totalAtt, totalPass, patrimonioNetto };
+  }
+  function makeRow(label, field, isNeg) {
+    const cells = d.quarters.map((q,qi) => `<td><input class="cell-input" type="number" value="${q[field]||''}" placeholder="0"
+      onchange="updatePatr(${qi},'${field}',this.value)" style="width:90px"></td>`).join('');
+    return `<tr><td ${isNeg?'style="color:var(--red)"':''}>${label}</td>${cells}</tr>`;
+  }
+  function calcRow(label, fn, cls) {
+    const vals = d.quarters.map(q => fn(calcQuarter(q)));
+    return `<tr class="row-total ${cls||''}"><td><b>${label}</b></td>${vals.map(v=>`<td class="${colorVal(v)}"><b>${fc(v)}</b></td>`).join('')}</tr>`;
+  }
+  function sH(label) { return `<tr class="row-section-header"><td colspan="5">${label}</td></tr>`; }
+  const totals = d.quarters.map(q => calcQuarter(q));
+  return `
+<div class="card">
+  <div class="card-header"><div class="card-title">🏦 Stato Patrimoniale ${state.currentYear}</div></div>
+  <div class="card-body" style="padding:8px">
+  <div class="table-wrap">
+  <table class="data-table">
+    <thead><tr><th style="min-width:220px">Voce</th>${quarterLabels.map(l=>`<th>${l}</th>`).join('')}</tr></thead>
+    <tbody>
+      ${sH('💵 POSIZIONE FINANZIARIA IMMEDIATA')}
+      ${makeRow('(+) Cassa contanti','cassa')}
+      ${makeRow('(+) Saldo conto corrente 1','cc1')}
+      ${makeRow('(+) Saldo conto corrente 2','cc2')}
+      ${makeRow('(+) Saldo conto corrente 3','cc3')}
+      ${makeRow('(+) Investimenti liquidi','investimenti')}
+      ${makeRow('(−) Anticipo fatture in uso','anticipoFatture',true)}
+      ${makeRow('(−) Fidi in uso','fidi',true)}
+      ${calcRow('= POSIZIONE IMMEDIATA', q=>q.immediata, '')}
+      ${sH('📅 POSIZIONE A SCADENZA')}
+      ${makeRow('(−) Mutuo 1 — capitale residuo','mutuo1',true)}
+      ${makeRow('(−) Mutuo 2 — capitale residuo','mutuo2',true)}
+      ${calcRow('= POSIZIONE A SCADENZA', q=>q.aScadenza, '')}
+      ${calcRow('🏦 POSIZIONE FINANZIARIA NETTA', q=>q.posizFin, 'row-margin')}
+      ${sH('📋 CREDITI E ATTIVITÀ')}
+      ${makeRow('Crediti verso clienti','creditiClienti')}
+      ${makeRow('Rimanenze di magazzino','rimanenze')}
+      ${makeRow('Altri crediti','altriCrediti')}
+      ${sH('📋 DEBITI E PASSIVITÀ')}
+      ${makeRow('Debiti verso fornitori','debitiFornitore',true)}
+      ${makeRow('Altri debiti','altriDebiti',true)}
+      ${sH('TOTALI')}
+      ${calcRow('TOTALE ATTIVITÀ', q=>q.totalAtt, '')}
+      ${calcRow('TOTALE PASSIVITÀ', q=>q.totalPass, '')}
+      <tr class="row-margin"><td><b>💹 PATRIMONIO NETTO</b></td>
+        ${totals.map(q=>`<td class="${colorVal(q.patrimonioNetto)}"><b>${fc(q.patrimonioNetto)}</b></td>`).join('')}
+      </tr>
+    </tbody>
+  </table></div></div>
+</div>
+<div style="background:var(--light);padding:10px 14px;border-radius:6px;font-size:12px;color:var(--muted)">
+  💡 Inserisci i valori a fine trimestre. La Posizione Finanziaria Netta = Immediata + A Scadenza. 
+  Il Patrimonio Netto = Totale Attività − Totale Passività. Un PN positivo e crescente è un buon segno.
+</div>`;
+}
+
+function updatePatr(qi, field, value) {
+  D().patrimoniale.quarters[qi][field] = parseFloat(value) || 0;
+  saveData();
+}
+
+// ═══════════════════════════════════════════════════════════
+// EXPORT / IMPORT
+// ═══════════════════════════════════════════════════════════
+function exportJSON() {
+  const data = JSON.stringify(state, null, 2);
+  const blob = new Blob([data], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `Dashboard_CG_${state.companyName||'Azienda'}_${state.currentYear}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+function importJSONFile() { document.getElementById('file-input').click(); }
+function loadJSONFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const loaded = JSON.parse(e.target.result);
+      state.sectorData = loaded.sectorData || {};
+      state.companyName = loaded.companyName || '';
+      state.currentSector = loaded.currentSector || 'generico';
+      state.currentYear = loaded.currentYear || 2025;
+      state.locked = loaded.locked || false;
+      state.lockHash = loaded.lockHash || '';
+      document.getElementById('company-name').value = state.companyName;
+      document.getElementById('year-select').value = state.currentYear;
+      Object.keys(SECTORS).forEach(k => initSectorData(k));
+      saveData(); buildSectorTabs(); updateLockUI(); renderModule();
+      alert('✅ Dati caricati con successo!');
+    } catch(err) { alert('❌ Errore nel file JSON: ' + err.message); }
+  };
+  reader.readAsText(file);
+  input.value = '';
+}
+function exportExcel() {
+  if (typeof XLSX === 'undefined') {
+    alert('Export Excel richiede connessione internet (CDN SheetJS). Usa "Salva file" per esportare in JSON.');
+    return;
+  }
+  const wb = XLSX.utils.book_new();
+  const sector = state.currentSector;
+  const d = state.sectorData[sector];
+  const t = fpTotals();
+  // Sheet: Piano FP
+  const fpData = [
+    ['PIANO FINANZIARIO', state.currentYear, SECTORS[sector].label],
+    ['Azienda:', state.companyName],
+    [],
+    ['CATEGORIA', 'TOTALE', '%', ...MONTHS_FULL],
+    ['─── INCASSATO ───'],
+    ...d.fp.income.map(r => [r.name, sumArr(r.monthly), t.sumI>0?sumArr(r.monthly)/t.sumI:0, ...r.monthly]),
+    ['INCASSATO TOTALE', t.sumI, 1, ...t.totIncome],
+    [],
+    ['─── COSTI VARIABILI ───'],
+    ...d.fp.vcosts.map(r => [r.name, sumArr(r.monthly), t.sumI>0?sumArr(r.monthly)/t.sumI:0, ...r.monthly]),
+    ['TOT. COSTI VARIABILI', t.sumV, t.sumI>0?t.sumV/t.sumI:0, ...t.totVCost],
+    [],
+    ['─── COSTI FISSI ───'],
+    ...d.fp.fcosts.map(r => [r.name, sumArr(r.monthly), t.sumI>0?sumArr(r.monthly)/t.sumI:0, ...r.monthly]),
+    ['TOT. COSTI FISSI', t.sumF, t.sumI>0?t.sumF/t.sumI:0, ...t.totFCost],
+    [],
+    ['─── PERSONALE ───'],
+    ...d.fp.employees.map(emp => [emp.name, emp.annualCost, t.sumI>0?emp.annualCost/t.sumI:0, ...MONTHS.map(()=>emp.annualCost/12)]),
+    ['TOT. PERSONALE', t.sumE, t.sumI>0?t.sumE/t.sumI:0, ...t.totEmp],
+    [],
+    ['TOTALE COSTI', t.sumC, t.sumI>0?t.sumC/t.sumI:0, ...t.totCost],
+    ['MARGINE OPERATIVO', t.sumM, t.sumI>0?t.sumM/t.sumI:0, ...t.margin],
+  ];
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(fpData), 'Piano FP');
+  // Sheet: Cruscotto
+  const crData = [
+    ['CRUSCOTTO KPI', state.currentYear],
+    ['Mese','Venduto','Fatturato','Incassato','Saldo CC','Crediti Scaduti','Debiti Scaduti'],
+    ...d.cruscotto.monthly.map(m => [m.mese, m.venduto, m.fatturato, m.incassato, m.saldoCC, m.creditiScaduti, m.debitiScaduti])
+  ];
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(crData), 'Cruscotto');
+  // Sheet: Registro Entrate
+  const entData = [
+    ['REGISTRO ENTRATE'],
+    ['Data','Importo Lordo','Descrizione','Tipologia CF','Tipologia FP','IVA %'],
+    ...d.registro.entrate.map(e => [e.data, e.importoLordo, e.descrizione, e.tipologiaCF, e.tipologiaFP, e.iva])
+  ];
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(entData), 'Registro Entrate');
+  // Sheet: Registro Uscite
+  const uscData = [
+    ['REGISTRO USCITE'],
+    ['Data','Importo Lordo','Descrizione','Tipologia CF','Tipologia FP','IVA %'],
+    ...d.registro.uscite.map(e => [e.data, e.importoLordo, e.descrizione, e.tipologiaCF, e.tipologiaFP, e.iva])
+  ];
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(uscData), 'Registro Uscite');
+  // Sheet: Velocità Denaro
+  const velData = [
+    ['VELOCITÀ DEL DENARO'],
+    ['Parametro','Valore','Giorni'],
+    ['Fatturato ultimi 12m', d.velocita.fatturato12m, ''],
+    ['Acquisti ultimi 12m', d.velocita.acquisti12m, ''],
+    ['Crediti clienti', d.velocita.crediti, d.velocita.fatturato12m>0?(d.velocita.crediti/d.velocita.fatturato12m*365).toFixed(0)+'gg C':''],
+    ['Magazzino', d.velocita.magazzino, d.velocita.acquisti12m>0?(d.velocita.magazzino/d.velocita.acquisti12m*365).toFixed(0)+'gg M':''],
+    ['Debiti fornitori', d.velocita.debiti, d.velocita.acquisti12m>0?(d.velocita.debiti/d.velocita.acquisti12m*365).toFixed(0)+'gg F':''],
+    ['C + M - F', '', (() => {
+      const C = d.velocita.fatturato12m>0?(d.velocita.crediti/d.velocita.fatturato12m*365)|0:0;
+      const M = d.velocita.acquisti12m>0?(d.velocita.magazzino/d.velocita.acquisti12m*365)|0:0;
+      const F = d.velocita.acquisti12m>0?(d.velocita.debiti/d.velocita.acquisti12m*365)|0:0;
+      return (C+M-F)+'gg';
+    })()],
+    [],
+    ['CAPITALE CIRCOLANTE NETTO (CCN)'],
+    ['Voce','Importo',''],
+    ['ATTIVO CORRENTE','',''],
+    ['+ Crediti verso clienti', d.velocita.crediti||0, ''],
+    ['+ Rimanenze / Magazzino', d.velocita.magazzino||0, ''],
+    ['+ Disponibilità liquide (cassa + c/c)', d.velocita.liquidita||0, ''],
+    ['+ Altri crediti a breve', d.velocita.altriCrediti||0, ''],
+    ['= Totale Attivo Corrente', (d.velocita.crediti||0)+(d.velocita.magazzino||0)+(d.velocita.liquidita||0)+(d.velocita.altriCrediti||0), ''],
+    ['PASSIVO CORRENTE','',''],
+    ['- Debiti verso fornitori', d.velocita.debiti||0, ''],
+    ['- Debiti tributari (IVA, F24)', d.velocita.debitiTributari||0, ''],
+    ['- Debiti verso dipendenti', d.velocita.debitiDipendenti||0, ''],
+    ['- Fidi bancari utilizzati', d.velocita.fidiUtilizzati||0, ''],
+    ['= Totale Passivo Corrente', (d.velocita.debiti||0)+(d.velocita.debitiTributari||0)+(d.velocita.debitiDipendenti||0)+(d.velocita.fidiUtilizzati||0), ''],
+    (() => {
+      const ac = (d.velocita.crediti||0)+(d.velocita.magazzino||0)+(d.velocita.liquidita||0)+(d.velocita.altriCrediti||0);
+      const pc = (d.velocita.debiti||0)+(d.velocita.debitiTributari||0)+(d.velocita.debitiDipendenti||0)+(d.velocita.fidiUtilizzati||0);
+      return ['CCN = AC - PC', ac-pc, pc>0?'Current Ratio: '+(ac/pc).toFixed(2):''];
+    })()
+  ];
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(velData), 'Velocità Denaro');
+  XLSX.writeFile(wb, `Dashboard_CG_${state.companyName||'Azienda'}_${state.currentYear}.xlsx`);
+}
+
+// ═══════════════════════════════════════════════════════════
+// PASSWORD LOCK
+// ═══════════════════════════════════════════════════════════
+async function hashPwd(pwd) {
+  try {
+    const buf = new TextEncoder().encode(pwd);
+    const hash = await crypto.subtle.digest('SHA-256', buf);
+    return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,'0')).join('');
+  } catch(e) {
+    // Fallback: simple hash for environments without subtle crypto
+    let h = 0;
+    for (let i = 0; i < pwd.length; i++) { h = (Math.imul(31, h) + pwd.charCodeAt(i)) | 0; }
+    return 'fallback_' + Math.abs(h).toString(16);
+  }
+}
+
+function openLockModal() {
+  const locked = state.locked;
+  document.getElementById('modal-body').innerHTML = locked ? `
+    <h3>🔓 Sblocca Dashboard</h3>
+    <p style="color:var(--muted);font-size:12px;margin-bottom:16px">
+      Inserisci la password admin per sbloccare la configurazione e il cambio settore.
+    </p>
+    <div class="form-group">
+      <label>Password Admin</label>
+      <input type="password" id="lock-pwd" placeholder="Password..." autofocus onkeydown="if(event.key==='Enter')doUnlock()">
+    </div>
+    <div class="flex mt-3">
+      <button class="btn btn-primary" onclick="doUnlock()">🔓 Sblocca</button>
+      <button class="btn btn-outline" onclick="closeModal()">Annulla</button>
+    </div>
+  ` : `
+    <h3>🔒 Configura e Blocca Dashboard</h3>
+    <p style="color:var(--muted);font-size:12px;margin-bottom:12px">
+      Imposta una password per bloccare la selezione del settore e la struttura del Piano FP.
+      Il cliente potrà compilare <b>Registro</b>, <b>Cruscotto</b> e <b>Piano FP</b> (valori mensili),
+      ma non potrà cambiare settore né aggiungere/rimuovere voci.
+    </p>
+    <div class="form-group">
+      <label>Settore da bloccare</label>
+      <div style="font-weight:700;color:var(--accent);font-size:14px">${SECTORS[state.currentSector].icon} ${SECTORS[state.currentSector].label}</div>
+      <small style="color:var(--muted)">Cambia settore nella sidebar prima di bloccare</small>
+    </div>
+    <div class="form-group">
+      <label>Password Admin (min 4 caratteri)</label>
+      <input type="password" id="lock-pwd" placeholder="Es: osm2025" autofocus>
+    </div>
+    <div class="form-group">
+      <label>Conferma Password</label>
+      <input type="password" id="lock-pwd2" placeholder="Ripeti password" onkeydown="if(event.key==='Enter')doLock()">
+    </div>
+    <div style="background:#fff8e1;border:1px solid var(--yellow);border-radius:6px;padding:10px;margin-bottom:12px;font-size:12px">
+      ⚠️ <b>Importante:</b> Ricorda la password — non è recuperabile. Dopo aver bloccato,
+      esporta il file JSON (💾 Salva file) e consegnalo al cliente.
+    </div>
+    <div class="flex mt-3">
+      <button class="btn btn-primary" onclick="doLock()">🔒 Blocca Dashboard</button>
+      <button class="btn btn-outline" onclick="closeModal()">Annulla</button>
+    </div>
+  `;
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+async function doLock() {
+  const p1 = document.getElementById('lock-pwd').value;
+  const p2 = document.getElementById('lock-pwd2').value;
+  if (p1.length < 4) { alert('La password deve essere di almeno 4 caratteri.'); return; }
+  if (p1 !== p2) { alert('Le password non coincidono.'); return; }
+  state.lockHash = await hashPwd(p1);
+  state.locked = true;
+  saveData();
+  buildSectorTabs();
+  updateLockUI();
+  closeModal();
+  renderModule();
+  alert('✅ Dashboard bloccata! Ora esporta il file JSON (💾 Salva file) e consegnalo al cliente.');
+}
+
+async function doUnlock() {
+  const p = document.getElementById('lock-pwd').value;
+  const h = await hashPwd(p);
+  if (h === state.lockHash) {
+    state.locked = false;
+    saveData();
+    buildSectorTabs();
+    updateLockUI();
+    closeModal();
+    renderModule();
+  } else {
+    const inp = document.getElementById('lock-pwd');
+    inp.style.borderColor = 'var(--red)';
+    inp.value = '';
+    inp.placeholder = '❌ Password errata, riprova';
+    setTimeout(() => { inp.style.borderColor = ''; inp.placeholder = 'Password...'; }, 2000);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// IMPORT MODAL
+// ═══════════════════════════════════════════════════════════
+function openImportModal() {
+  importState.tab = 'movimenti';
+  importState.rows = [];
+  importState.wb = null;
+  importState.osmSheets = null;
+  importState.osmParsed = null;
+  importState.osmSheet = '';
+  showImportModal();
+}
+
+function showImportModal() {
+  const tab = importState.tab;
+  const tabs = ['movimenti','piano','pdf'];
+  const tabLabels = { movimenti:'📊 Movimenti Bancari', piano:'📋 Piano FP', pdf:'📄 PDF' };
+  const tabsHtml = tabs.map(t =>
+    `<button class="import-tab ${tab===t?'active':''}" onclick="importState.tab='${t}';showImportModal()">${tabLabels[t]}</button>`
+  ).join('');
+
+  let content = '';
+  if (tab === 'movimenti') {
+    content = `
+    <p style="color:var(--muted);font-size:12px;margin-bottom:12px">
+      Carica un file Excel (.xlsx/.xls) o CSV esportato dalla tua banca.
+      Le colonne riconosciute sono: <b>Data, Importo, Descrizione/Causale</b>.
+    </p>
+    <div class="import-drop" onclick="document.getElementById('import-xls-input').click()">
+      <div style="font-size:32px;margin-bottom:8px">📊</div>
+      <div style="font-weight:700;color:var(--primary)">Clicca per scegliere file Excel / CSV</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:4px">Formati supportati: .xlsx .xls .csv</div>
+    </div>
+    ${importState.rows.length > 0 ? renderImportPreview() : ''}
+    ${importState.rows.length > 0 ? `
+    <div style="margin-top:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <label style="font-size:12px;font-weight:600">Importa come:</label>
+      <select id="imp-type" style="width:auto">
+        <option value="entrate">Entrate</option>
+        <option value="uscite">Uscite</option>
+        <option value="auto">Auto (rileva da importo +/-)</option>
+      </select>
+      <button class="btn btn-primary btn-sm" onclick="confirmImport()">✅ Importa ${importState.rows.length} righe nel Registro</button>
+    </div>` : ''}`;
+  } else if (tab === 'piano') {
+    if (importState.osmSheets) {
+      // OSM format detected — show year selector
+      const sheetOpts = importState.osmSheets.map(s => {
+        const yr = s.match(/\d{4}/)?.[0] || s;
+        return `<option value="${s}" ${importState.osmSheet===s?'selected':''}>${yr}</option>`;
+      }).join('');
+      const parsed = importState.osmParsed;
+      content = `
+      <div style="background:#eaf4fe;border:1px solid #b8d9f5;border-radius:6px;padding:10px 14px;margin-bottom:12px">
+        <div style="font-weight:700;color:var(--primary);margin-bottom:4px">📋 File OSM Piano Finanziario rilevato</div>
+        <div style="font-size:12px;color:var(--muted)">Scegli l'anno da importare e premi "Carica anteprima".</div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;margin-bottom:12px;flex-wrap:wrap">
+        <label style="font-size:12px;font-weight:600">Anno:</label>
+        <select id="osm-sheet-sel" style="width:auto" onchange="importState.osmSheet=this.value">
+          ${sheetOpts}
+        </select>
+        <button class="btn btn-primary btn-sm" onclick="loadOSMSheet()">🔍 Carica anteprima</button>
+        <button class="btn btn-sm btn-outline" onclick="importState.osmSheets=null;importState.osmParsed=null;importState.wb=null;showImportModal()" title="Carica un file diverso">🔄 Cambia file</button>
+      </div>
+      ${parsed ? renderOSMPreview(parsed) : ''}
+      ${parsed ? `<div style="margin-top:12px"><button class="btn btn-success btn-sm" onclick="confirmImportOSM()">✅ Importa nel Piano FP (${(parsed.income.length+parsed.vcosts.length+parsed.fcosts.length)} voci)</button></div>` : ''}`;
+    } else {
+      content = `
+      <p style="color:var(--muted);font-size:12px;margin-bottom:12px">
+        Carica un file Excel con il Piano FP. Supporta il formato <b>OSM Piano Finanziario</b> (fogli "PIANO FINANZIARIO XXXX")
+        e il formato esportato da questa dashboard (colonne: Categoria, Gen–Dic).
+      </p>
+      <div class="import-drop" onclick="document.getElementById('import-xls-input').click()">
+        <div style="font-size:32px;margin-bottom:8px">📋</div>
+        <div style="font-weight:700;color:var(--primary)">Clicca per scegliere il file Piano FP</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">Formati: OSM Piano Finanziario .xlsx · Export dashboard .xlsx</div>
+      </div>
+      ${importState.rows.length > 0 ? renderImportPreview() : ''}
+      ${importState.rows.length > 0 ? `<div style="margin-top:12px"><button class="btn btn-primary btn-sm" onclick="confirmImportPiano()">✅ Importa nel Piano FP</button></div>` : ''}`;
+    }
+  } else if (tab === 'pdf') {
+    content = `
+    <p style="color:var(--muted);font-size:12px;margin-bottom:12px">
+      Carica un estratto conto o documento PDF. Il testo viene estratto automaticamente e le righe
+      con data + importo vengono classificate come movimenti.<br>
+      <b>Nota:</b> funziona con PDF digitali. Le scansioni richiedono OCR esterno.
+    </p>
+    <div class="import-drop" onclick="document.getElementById('import-pdf-input').click()">
+      <div style="font-size:32px;margin-bottom:8px">📄</div>
+      <div style="font-weight:700;color:var(--primary)">Clicca per scegliere un file PDF</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:4px">Funziona con PDF digitali (testo selezionabile)</div>
+    </div>
+    ${importState.rows.length > 0 ? renderImportPreview() : ''}
+    ${importState.rows.length > 0 ? `
+    <div style="margin-top:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <label style="font-size:12px;font-weight:600">Importa come:</label>
+      <select id="imp-type" style="width:auto">
+        <option value="auto">Auto (rileva da importo +/-)</option>
+        <option value="entrate">Entrate</option>
+        <option value="uscite">Uscite</option>
+      </select>
+      <button class="btn btn-primary btn-sm" onclick="confirmImport()">✅ Importa ${importState.rows.length} righe nel Registro</button>
+    </div>` : ''}`;
+  }
+
+  document.getElementById('modal-body').innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <h3 style="margin:0">📥 Importa Dati</h3>
+      <button onclick="closeModal()" style="background:none;border:none;font-size:18px;cursor:pointer;color:var(--muted)">✕</button>
+    </div>
+    <div class="import-tabs">${tabsHtml}</div>
+    ${content}
+  `;
+  const mo = document.getElementById('modal-overlay');
+  mo.classList.add('open');
+  document.querySelector('.modal').classList.add('modal-lg');
+}
+
+function renderImportPreview() {
+  const rows = importState.rows.slice(0, 50);
+  if (!rows.length) return '';
+  const keys = Object.keys(rows[0]);
+  return `<div class="import-preview">
+    <table>
+      <thead><tr>${keys.map(k=>`<th>${k}</th>`).join('')}</tr></thead>
+      <tbody>${rows.map(r=>`<tr>${keys.map(k=>`<td>${r[k]??''}</td>`).join('')}</tr>`).join('')}</tbody>
+    </table>
+  </div>
+  <div style="font-size:11px;color:var(--muted);margin-top:4px">${importState.rows.length} righe trovate${importState.rows.length>50?' (mostrando prime 50)':''}</div>`;
+}
+
+function handleXLSImport(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (typeof XLSX === 'undefined') {
+    alert('Importazione Excel richiede connessione internet (CDN SheetJS). Connettiti e riprova.');
+    input.value = ''; return;
+  }
+  const isCSV = /\.csv$/i.test(file.name);
+  const reader = new FileReader();
+  reader.onerror = () => { alert('❌ Errore lettura file.'); input.value = ''; };
+  reader.onload = e => {
+    try {
+      let wb;
+      if (isCSV) {
+        wb = XLSX.read(e.target.result, {type:'string', cellDates:true});
+      } else {
+        wb = XLSX.read(e.target.result, {type:'array', cellDates:true});
+      }
+
+      // Detect OSM Piano Finanziario format
+      const osmSheets = wb.SheetNames.filter(n => /PIANO FINANZIARIO/i.test(n));
+      if (osmSheets.length > 0 && importState.tab === 'piano') {
+        importState.wb = wb;
+        importState.osmSheets = osmSheets;
+        importState.osmParsed = null;
+        importState.rows = [];
+        // Pre-select closest year to current
+        const curYear = String(state.currentYear);
+        importState.osmSheet = osmSheets.find(s => s.includes(curYear)) || osmSheets[osmSheets.length - 1];
+        showImportModal();
+        input.value = '';
+        return;
+      }
+
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const raw = XLSX.utils.sheet_to_json(ws, {raw:true, defval:''});
+      if (!raw.length) { alert('⚠️ File vuoto o formato non riconosciuto.'); input.value = ''; return; }
+      if (importState.tab === 'piano') {
+        importState.rows = raw;
+      } else {
+        importState.rows = mapBankColumns(raw);
+        if (!importState.rows.length) {
+          alert('⚠️ Nessun movimento trovato. Verifica che il file abbia colonne Data e Importo riconoscibili.');
+          input.value = ''; return;
+        }
+      }
+      showImportModal();
+    } catch(err) { alert('❌ Errore lettura file: ' + err.message); }
+    input.value = '';
+  };
+  if (isCSV) reader.readAsText(file, 'utf-8');
+  else reader.readAsArrayBuffer(file);
+}
+
+function mapBankColumns(raw) {
+  if (!raw.length) return [];
+  const rawKeys = Object.keys(raw[0]);
+  // Detect date column (Italian banks: "Data", "Data Valuta", "Data Operazione", "Contabile")
+  const dateKey = rawKeys.find(k => /^data|date|giorno|day|valuta|contabile|operaz/i.test(k)) || rawKeys[0];
+  // Detect amount column — try specific patterns first, then fallback
+  const amtKey = rawKeys.find(k => /^(importo|amount|valore|entrate|uscite|dare|avere|accredito|addebito|mov)$/i.test(k))
+    || rawKeys.find(k => /import|amount|valore|accredito|addebito|dare|avere|entrat|uscit/i.test(k));
+  // Detect description column
+  const descKey = rawKeys.find(k => /descr|causale|reason|note|detail|dicitura|riferim|operation/i.test(k));
+  return raw.map(r => {
+    let importo = 0;
+    if (amtKey) {
+      importo = cleanAmount(r[amtKey]);
+    } else {
+      // Fallback: find first column with a parseable number (excluding date col)
+      for (const k of rawKeys) {
+        if (k === dateKey) continue;
+        const v = cleanAmount(r[k]);
+        if (Math.abs(v) > 0.01) { importo = v; break; }
+      }
+    }
+    const descrizione = descKey
+      ? String(r[descKey] || '').substring(0, 80)
+      : rawKeys.filter(k => k !== dateKey && k !== amtKey).map(k => r[k]).join(' ').substring(0, 80);
+    return {
+      data: formatDateIT(r[dateKey] || ''),
+      importo,
+      descrizione
+    };
+  }).filter(r => r.data || Math.abs(r.importo) > 0.01);
+}
+
+function formatDateIT(val) {
+  if (!val) return '';
+  // SheetJS Date object
+  if (val instanceof Date && !isNaN(val.getTime())) {
+    const y = val.getFullYear();
+    const mo = String(val.getMonth()+1).padStart(2,'0');
+    const da = String(val.getDate()).padStart(2,'0');
+    return `${y}-${mo}-${da}`;
+  }
+  const s = String(val).trim();
+  if (!s) return '';
+  // Already ISO yyyy-mm-dd
+  if (/^\d{4}-\d{2}-\d{2}/.test(s)) return s.substring(0,10);
+  // dd/mm/yyyy or dd-mm-yyyy or dd.mm.yyyy (Italian format)
+  const m1 = s.match(/^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{2,4})$/);
+  if (m1) {
+    const y = m1[3].length===2 ? '20'+m1[3] : m1[3];
+    return `${y}-${m1[2].padStart(2,'0')}-${m1[1].padStart(2,'0')}`;
+  }
+  // Textual Italian date: "15 gen 2025", "15 gennaio 2025"
+  const monthMap = {gen:1,feb:2,mar:3,apr:4,mag:5,giu:6,lug:7,ago:8,set:9,ott:10,nov:11,dic:12};
+  const m2 = s.match(/^(\d{1,2})\s+([a-z]+)[\s\-](\d{4})/i);
+  if (m2) {
+    const mo = monthMap[m2[2].toLowerCase().substring(0,3)];
+    if (mo) return `${m2[3]}-${String(mo).padStart(2,'0')}-${m2[1].padStart(2,'0')}`;
+  }
+  // Native parse fallback (handles ISO and unambiguous formats)
+  const d = new Date(s);
+  if (!isNaN(d.getTime())) {
+    const y = d.getFullYear(); const mo = String(d.getMonth()+1).padStart(2,'0'); const da = String(d.getDate()).padStart(2,'0');
+    return `${y}-${mo}-${da}`;
+  }
+  return s;
+}
+
+function cleanAmount(val) {
+  if (typeof val === 'number') return val;
+  if (!val) return 0;
+  let s = String(val).trim().replace(/[€$\s ]/g, ''); // remove currency, spaces, nbsp
+  if (!s || s === '-') return 0;
+  // Detect format by position of last comma vs last dot
+  const lastDot = s.lastIndexOf('.');
+  const lastComma = s.lastIndexOf(',');
+  if (lastComma > lastDot) {
+    // Italian/European format: 1.234,56 → remove dots, replace comma→dot
+    s = s.replace(/\./g, '').replace(',', '.');
+  } else if (lastDot > lastComma && lastComma !== -1) {
+    // US format: 1,234.56 → remove commas
+    s = s.replace(/,/g, '');
+  } else if (lastDot !== -1 && lastComma === -1) {
+    // Could be thousands dot (1.234) or decimal dot (1.23) — assume decimal if ≤2 digits after
+    const afterDot = s.substring(lastDot + 1);
+    if (afterDot.length > 2) s = s.replace('.', ''); // thousands separator
+  } else if (lastComma !== -1 && lastDot === -1) {
+    // Single comma: Italian decimal
+    s = s.replace(',', '.');
+  }
+  return parseFloat(s) || 0;
+}
+
+function confirmImport() {
+  const typeEl = document.getElementById('imp-type');
+  const mode = typeEl ? typeEl.value : 'auto';
+  const cfg = SECTORS[state.currentSector];
+  let nEnt = 0, nUsc = 0;
+  importState.rows.forEach(r => {
+    const imp = parseFloat(r.importo) || 0;
+    let tipo;
+    if (mode === 'auto') tipo = imp >= 0 ? 'entrate' : 'uscite';
+    else tipo = mode;
+    const row = {
+      data: r.data || '',
+      importoLordo: Math.abs(imp),
+      descrizione: r.descrizione || '',
+      tipologiaCF: tipo === 'entrate' ? (cfg.cashflowIn[0] || '') : (cfg.cashflowOut[0] || ''),
+      tipologiaFP: tipo === 'entrate' ? (cfg.income[0] || '') : (cfg.fcosts[0] || cfg.vcosts[0] || ''),
+      iva: 22
+    };
+    D().registro[tipo].push(row);
+    if (tipo === 'entrate') nEnt++; else nUsc++;
+  });
+  saveData();
+  closeModal();
+  state.currentModule = 'registro';
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.module === 'registro'));
+  renderModule();
+  alert(`✅ Importati ${nEnt} entrate e ${nUsc} uscite nel Registro Movimenti.\nVerifica e aggiusta le categorie se necessario.`);
+}
+
+function confirmImportPiano() {
+  const rows = importState.rows;
+  const d = D().fp;
+  let imported = 0;
+  // Build a lookup for all possible month key variants
+  // Our Excel export uses MONTHS_FULL as column headers: Gennaio, Febbraio, ...
+  // Also try abbreviated: Gen, Feb, ...
+  rows.forEach(r => {
+    const rKeys = Object.keys(r);
+    const cat = r['CATEGORIA'] || r['Categoria'] || r['categoria'] || r[rKeys[0]] || '';
+    if (!cat || ['PIANO FINANZIARIO','Azienda:','',undefined].includes(cat)) return;
+    // Try to extract 12 monthly values by matching month column names
+    const monthly = MONTHS_FULL.map((mFull, i) => {
+      const mAbbr = MONTHS[i]; // "Gen", "Feb", ...
+      // Try various capitalizations
+      const v = r[mFull] ?? r[mFull.toUpperCase()] ?? r[mAbbr] ?? r[mAbbr.toUpperCase()] ?? '';
+      return cleanAmount(v);
+    });
+    if (monthly.every(v => v === 0)) return;
+    const existing = [...d.income, ...d.vcosts, ...d.fcosts].find(x => x.name === cat);
+    if (existing) {
+      existing.monthly = monthly;
+    } else {
+      // Guess section from category name matching SECTORS config
+      const cfg = SECTORS[state.currentSector];
+      if (cfg.income.includes(cat)) d.income.push({name: cat, monthly});
+      else if (cfg.vcosts.includes(cat)) d.vcosts.push({name: cat, costType:'V', monthly});
+      else if (cfg.fcosts.includes(cat)) d.fcosts.push({name: cat, costType:'F', monthly});
+      else d.income.push({name: cat, monthly}); // default to income
+    }
+    imported++;
+  });
+  saveData();
+  closeModal();
+  state.currentModule = 'piano';
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.module === 'piano'));
+  renderModule();
+  alert(imported > 0
+    ? `✅ Importate ${imported} righe nel Piano FP.`
+    : '⚠️ Nessuna riga importata. Verifica che il file abbia colonne "Categoria" e i mesi come intestazioni (Gennaio, Febbraio…).'
+  );
+}
+
+// ── OSM Piano Finanziario importer ──────────────────────────────────────────
+function parseOSMFP(wb, sheetName) {
+  const ws = wb.Sheets[sheetName];
+  if (!ws) return null;
+  // array-of-arrays: row[i] = array of cell values (null for empty)
+  const rows = XLSX.utils.sheet_to_json(ws, {header:1, defval:null, raw:true});
+  const result = { income: [], vcosts: [], fcosts: [] };
+  let section = null; // 'income' | 'vcosts' | 'fcosts'
+
+  // Summary rows that should NOT change section (skip entirely)
+  const SKIP_RE = /^(INCASSATO TOTALE|COSTI TOTALI|COSTI VARIABILI TOTALI|COSTI VARIABILI \/ TOTALE|UTILE LORDO)/i;
+  // Sub-section header keywords that appear in col B (change section)
+  const VCOST_RE = /^COSTI VARIABILI/i;
+  const FCOST_RE = /^COSTI FISSI/i;
+  const INCOME_RE = /^FATTURATO/i;
+
+  for (let ri = 0; ri < rows.length; ri++) {
+    const row = rows[ri] || [];
+    // col B = index 1, col C = index 2, cols F-Q = indices 5-16
+    const tipologia = row[1] != null ? String(row[1]).trim() : null;
+    const descrizione = row[2] != null ? String(row[2]).trim() : null;
+
+    // Extract monthly values (cols 5-16 = Jan-Dec)
+    const monthly = [];
+    for (let c = 5; c <= 16; c++) {
+      const v = row[c];
+      monthly.push(typeof v === 'number' ? v : cleanAmount(v));
+    }
+    const hasValues = monthly.some(v => Math.abs(v) > 0.01);
+
+    if (tipologia) {
+      // Skip summary rows
+      if (SKIP_RE.test(tipologia)) continue;
+      // Section switches
+      if (INCOME_RE.test(tipologia)) {
+        section = 'income';
+        // FATTURATO row itself carries monthly values
+        if (hasValues) {
+          const name = descrizione && !/^FATTURATO$/i.test(descrizione) ? descrizione : 'Fatturato';
+          result.income.push({name, monthly, costType: null});
+        }
+        continue;
+      }
+      if (VCOST_RE.test(tipologia)) { section = 'vcosts'; continue; }
+      if (FCOST_RE.test(tipologia)) { section = 'fcosts'; continue; }
+      // Any other non-empty tipologia with values → add to current section if known
+      if (section && hasValues && descrizione) {
+        result[section].push({name: descrizione, monthly, costType: section === 'vcosts' ? 'V' : section === 'fcosts' ? 'F' : null});
+      }
+    } else {
+      // No tipologia in col B — detail row (data row or sub-section label)
+      if (!descrizione) continue;
+      // INCASSATO can appear before the COSTI section with section still = 'income'
+      if (/^INCASSATO$/i.test(descrizione)) {
+        if (hasValues) result.income.push({name: 'Incassato', monthly, costType: null});
+        continue;
+      }
+      if (!section) continue; // before any section header
+      if (!hasValues) continue; // sub-section label with no values (e.g. "Gestione rete vendita diretta")
+      result[section].push({
+        name: descrizione,
+        monthly,
+        costType: section === 'vcosts' ? 'V' : section === 'fcosts' ? 'F' : null
+      });
+    }
+  }
+  return result;
+}
+
+function loadOSMSheet() {
+  const sel = document.getElementById('osm-sheet-sel');
+  if (sel) importState.osmSheet = sel.value;
+  if (!importState.wb || !importState.osmSheet) return;
+  const parsed = parseOSMFP(importState.wb, importState.osmSheet);
+  if (!parsed) { alert('❌ Errore lettura foglio OSM.'); return; }
+  const total = parsed.income.length + parsed.vcosts.length + parsed.fcosts.length;
+  if (!total) {
+    alert('⚠️ Nessuna voce trovata nel foglio selezionato.\nVerifica che l\'anno sia corretto e che il file abbia il formato OSM Piano Finanziario.');
+    return;
+  }
+  importState.osmParsed = parsed;
+  showImportModal();
+}
+
+function renderOSMPreview(parsed) {
+  const sections = [
+    {key:'income', label:'💰 Ricavi (Fatturato/Incassato)', color:'var(--green)'},
+    {key:'vcosts', label:'🔶 Costi Variabili', color:'var(--orange)'},
+    {key:'fcosts', label:'🔴 Costi Fissi', color:'var(--red)'}
+  ];
+  let html = '<div class="import-preview" style="max-height:320px;overflow-y:auto">';
+  sections.forEach(sec => {
+    const rows = parsed[sec.key];
+    if (!rows.length) return;
+    html += `<div style="margin-bottom:6px">
+      <div style="font-weight:700;font-size:11px;color:${sec.color};padding:4px 6px;background:#f5f5f5;border-radius:3px">${sec.label} — ${rows.length} voci</div>
+      <table style="width:100%;font-size:11px;border-collapse:collapse">
+        <thead><tr style="background:#eee">
+          <th style="padding:3px 6px;text-align:left;min-width:160px">Voce</th>
+          <th style="padding:3px 4px">Tipo</th>
+          ${MONTHS.map(m=>`<th style="padding:3px 4px">${m}</th>`).join('')}
+          <th style="padding:3px 4px;font-weight:700">Tot</th>
+        </tr></thead>
+        <tbody>${rows.map(r => {
+          const tot = r.monthly.reduce((a,b)=>a+b,0);
+          return `<tr>
+            <td style="padding:2px 6px;font-weight:500;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.name}</td>
+            <td style="padding:2px 4px;text-align:center;color:${r.costType==='V'?'var(--orange)':r.costType==='F'?'var(--red)':'var(--green)'}">${r.costType||'R'}</td>
+            ${r.monthly.map(v=>`<td style="padding:2px 4px;text-align:right">${v?fc(v):''}</td>`).join('')}
+            <td style="padding:2px 4px;text-align:right;font-weight:700">${fc(tot)}</td>
+          </tr>`;
+        }).join('')}</tbody>
+      </table></div>`;
+  });
+  html += '</div>';
+  html += `<div style="font-size:11px;color:var(--muted);margin-top:4px">
+    Trovate: ${parsed.income.length} ricavi · ${parsed.vcosts.length} costi variabili · ${parsed.fcosts.length} costi fissi</div>`;
+  return html;
+}
+
+function confirmImportOSM() {
+  const parsed = importState.osmParsed;
+  if (!parsed) return;
+  const d = D().fp;
+  let nNew = 0, nUpd = 0;
+
+  const mergeRows = (sourceArr, targetArr, costType) => {
+    sourceArr.forEach(src => {
+      const existing = targetArr.find(x => x.name === src.name);
+      if (existing) {
+        existing.monthly = src.monthly;
+        if (costType) existing.costType = costType;
+        nUpd++;
+      } else {
+        const entry = {name: src.name, monthly: src.monthly};
+        if (costType) entry.costType = costType;
+        targetArr.push(entry);
+        nNew++;
+      }
+    });
+  };
+
+  mergeRows(parsed.income, d.income, null);
+  mergeRows(parsed.vcosts, d.vcosts, 'V');
+  mergeRows(parsed.fcosts, d.fcosts, 'F');
+
+  saveData();
+  closeModal();
+  state.currentModule = 'piano';
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.module === 'piano'));
+  renderModule();
+  alert(`✅ Piano FP aggiornato!\n${nNew} nuove voci aggiunte · ${nUpd} voci aggiornate`);
+}
+// ── Fine OSM importer ────────────────────────────────────────────────────────
+
+async function handlePDFImport(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (typeof pdfjsLib === 'undefined') {
+    alert('Importazione PDF richiede connessione internet (CDN PDF.js). Connettiti e riprova.');
+    input.value = ''; return;
+  }
+  try {
+    const buf = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({data: buf}).promise;
+    let fullText = '';
+    for (let p = 1; p <= pdf.numPages; p++) {
+      const page = await pdf.getPage(p);
+      const content = await page.getTextContent();
+      fullText += content.items.map(i => i.str).join(' ') + '\n';
+    }
+    if (!fullText.trim()) {
+      alert('⚠️ Nessun testo trovato nel PDF.\nIl documento potrebbe essere una scansione. In quel caso usa un software OCR (es. Adobe Acrobat, Google Drive) per convertirlo in PDF digitale prima di importarlo.');
+      input.value = ''; return;
+    }
+    const rows = parsePDFTransactions(fullText);
+    if (!rows.length) {
+      alert('⚠️ Testo estratto dal PDF ma nessuna transazione riconosciuta.\nVerifica che il file sia un estratto conto con righe "data — descrizione — importo".');
+      input.value = ''; return;
+    }
+    importState.rows = rows;
+    showImportModal();
+  } catch(err) {
+    alert('❌ Errore lettura PDF: ' + err.message);
+  }
+  input.value = '';
+}
+
+function parsePDFTransactions(text) {
+  const lines = text.split(/[\n\r]+/).map(l => l.trim()).filter(l => l.length > 8);
+  const results = [];
+  // Date: dd/mm/yyyy or dd-mm-yyyy or dd.mm.yyyy
+  const dateRe = /(\d{2}[\/\-\.]\d{2}[\/\-\.]\d{2,4})/;
+  // Amount with exactly 2 decimal digits — must have comma or dot before exactly 2 digits at end
+  // This avoids matching plain integers (like day "01" or year "2025")
+  const amtRe = /([+-]?\d{1,3}(?:[.,]\d{3})*[.,]\d{2})(?:[^,\d]|$)/g;
+
+  lines.forEach(line => {
+    const dateM = line.match(dateRe);
+    if (!dateM) return;
+    // Work on the part of the line AFTER the date match to avoid parsing date digits
+    const afterDate = line.substring(dateM.index + dateM[0].length);
+    const amounts = [];
+    let m;
+    const re = /([+-]?\d{1,3}(?:[.,]\d{3})*[.,]\d{2})(?:[^,\d]|$)/g;
+    while ((m = re.exec(afterDate)) !== null) {
+      const v = cleanAmount(m[1]);
+      if (Math.abs(v) > 0.01 && Math.abs(v) < 50000000) amounts.push(v);
+    }
+    if (!amounts.length) return;
+    // Usually: first amount = importo, last = saldo — prefer first with sign or last
+    const signed = amounts.find(v => v < 0);
+    const importo = signed !== undefined ? signed : amounts[0];
+    const dateStr = formatDateIT(dateM[1]);
+    // Clean description: remove date and all amounts
+    const descrizione = line
+      .replace(dateM[0], ' ')
+      .replace(/[+-]?\d{1,3}(?:[.,]\d{3})*[.,]\d{2}/g, ' ')
+      .replace(/\s+/g, ' ').trim().substring(0, 80);
+    results.push({ data: dateStr, importo, descrizione });
+  });
+  return results;
+}
+
+// ═══════════════════════════════════════════════════════════
+// GUIDA CONDIVISIONE DRIVE
+// ═══════════════════════════════════════════════════════════
+function openDriveGuide() {
+  const company = state.companyName || 'Azienda';
+  const filename = `Dashboard_CG_${company}_${state.currentYear}.json`;
+  document.getElementById('modal-body').innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <h3 style="margin:0">☁️ Condividi con il Cliente</h3>
+      <button onclick="closeModal()" style="background:none;border:none;font-size:18px;cursor:pointer;color:var(--muted)">✕</button>
+    </div>
+    <p style="color:var(--muted);font-size:12px;margin-bottom:16px">
+      Segui questi passaggi per consegnare la dashboard al cliente e riceverla compilata.
+    </p>
+
+    <div class="drive-step">
+      <div class="drive-num">1</div>
+      <div>
+        <div style="font-weight:700;margin-bottom:2px">📤 Esporta il file JSON</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:6px">
+          Clicca il pulsante qui sotto per scaricare il file dati della dashboard.
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="exportJSON()">💾 Scarica "${filename}"</button>
+      </div>
+    </div>
+
+    <div class="drive-step">
+      <div class="drive-num">2</div>
+      <div>
+        <div style="font-weight:700;margin-bottom:2px">☁️ Carica su Google Drive</div>
+        <div style="font-size:12px;color:var(--muted)">
+          Apri <b>drive.google.com</b>, clicca <b>"+ Nuovo → Carica file"</b> e seleziona il file <code>${filename}</code>.
+          Poi clicca con il destro sul file → <b>"Ottieni link"</b> → imposta su "Chiunque abbia il link può visualizzare".
+        </div>
+      </div>
+    </div>
+
+    <div class="drive-step">
+      <div class="drive-num">3</div>
+      <div>
+        <div style="font-weight:700;margin-bottom:2px">📧 Invia link + file HTML al cliente</div>
+        <div style="font-size:12px;color:var(--muted)">
+          Invia al cliente: <b>(a)</b> il file <code>Dashboard_Controllo_Gestione.html</code>
+          (questo stesso file — aprilo nel browser) e <b>(b)</b> il link Drive al file JSON.<br>
+          Il cliente apre il file HTML, poi usa <b>"📂 Carica"</b> per caricare il file JSON.
+        </div>
+      </div>
+    </div>
+
+    <div class="drive-step">
+      <div class="drive-num">4</div>
+      <div>
+        <div style="font-weight:700;margin-bottom:2px">✍️ Il cliente compila la dashboard</div>
+        <div style="font-size:12px;color:var(--muted)">
+          Con la dashboard ${state.locked ? '<b>bloccata 🔒</b> il cliente può compilare solo' : 'il cliente compila'}
+          <b>Registro Movimenti</b>, <b>Cruscotto KPI</b> e <b>Piano Finanziario</b> (valori mensili).
+          ${!state.locked ? '<br><span style="color:var(--orange)">💡 Suggerimento: blocca la dashboard prima di consegnarla (🔒 Configura).</span>' : ''}
+        </div>
+      </div>
+    </div>
+
+    <div class="drive-step">
+      <div class="drive-num">5</div>
+      <div>
+        <div style="font-weight:700;margin-bottom:2px">📥 Il cliente ti rimanda il file JSON</div>
+        <div style="font-size:12px;color:var(--muted)">
+          Il cliente usa <b>"💾 Salva file"</b> per esportare i suoi dati e te li manda via email/Drive.
+          Tu usi <b>"📂 Carica"</b> per importarli nella tua dashboard e vedere i risultati.
+        </div>
+      </div>
+    </div>
+
+    <div style="background:var(--light);border-radius:6px;padding:10px 14px;margin-top:8px;font-size:12px">
+      💡 <b>Tip Pro:</b> Puoi anche creare una cartella Drive condivisa con il cliente:
+      lui ci mette il JSON aggiornato, tu lo ricarichi ogni volta. Nessun server, tutto offline.
+    </div>
+  `;
+  document.getElementById('modal-overlay').classList.add('open');
+  document.querySelector('.modal').classList.add('modal-lg');
+}
+
+// ═══════════════════════════════════════════════════════════
+// MODALE
+// ═══════════════════════════════════════════════════════════
+function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
+document.getElementById('modal-overlay').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeModal();
+});
+
+// ═══════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════
+function init() {
+  loadData();
+  buildSectorTabs();
+  updateLockUI();
+  renderModule();
+}
+window.addEventListener('DOMContentLoaded', init);
+// Auto-save on page unload
+window.addEventListener('beforeunload', saveData);
